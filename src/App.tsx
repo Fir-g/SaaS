@@ -14,6 +14,7 @@ import CRMLoginPage from "./pages/crm-integration/crm-login";
 import UploadMasterDataPage from "./pages/crm-integration/upload-master-data";
 import CRMSetupCompletePage from "./pages/crm-integration/complete-setup";
 import DashboardPage from "./pages/dashboard";
+import SpreadsheetPage from "./pages/dashboard/spreadsheet";
 import IntegrationsPage from "./pages/integrations/index";
 
 import {
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/" element={<Onboarding />} />
         <Route path="/load-sync" element={<LoadSyncPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard/spreadsheet" element={<SpreadsheetPage />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/load-publisher" element={<LoadPublisherPage />} />
 

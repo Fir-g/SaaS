@@ -32,7 +32,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/api/token/`,
+          "https://freight-tiger-backend.thetailoredai.co/api/token/",
           {
             username: "admin",
             password: "admin",

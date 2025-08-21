@@ -1,49 +1,203 @@
-const mockDashboardData = {
-  "Channel split": {
-    whatsapp: 120,
-    email: 80,
-  },
-  "demand sourced": 150,
-  "demand published": 130,
-  "top routes": [
-    {
-      route: ["Mumbai", "Delhi"],
-      demand: 40,
-    },
-    {
-      route: ["Bangalore", "Hyderabad"],
-      demand: 35,
-    },
-    {
-      route: ["Chennai", "Kolkata"],
-      demand: 30,
-    },
-    {
-      route: ["Pune", "Ahmedabad"],
-      demand: 25,
-    },
-    {
-      route: ["Jaipur", "Surat"],
-      demand: 20,
-    },
-  ],
-  "demand trend": {
-    "week 1": 20,
-    "week 2": 40,
-    "week 3": 50,
-    "week 4": 40,
-  },
-};
+import api from "@/utils/api/api";
+import { LatestDemandsResponse } from "@/types/demand";
 
+export interface ChannelSplitResponse {
+  entity: string;
+  rows: Array<{
+    key: string;
+    count: number;
+  }>;
+  total: number;
+}
 
+export interface TrendsResponse {
+  buckets: string[];
+  counts: number[];
+}
 
-const DashboardService = async () => {
-  const response = await new Promise((resolve) => {
-    setInterval(() => {
-      resolve(mockDashboardData);
-    }, 3000);
+export interface VehicleMappingResponse {
+  id: number;
+  tenant_id: string;
+  vehicle_id: string;
+  vehicle_name: string;
+  vehicle_type: string;
+  vehicle_code: string;
+  vehicle_length: string;
+  vehicle_axle: string | null;
+  vehicle_capacity: string;
+  vehicle_category: string;
+  vehicle_tyre: string | null;
+  vehicle_hq: string;
+  vehicle_family: string | null;
+}
+
+export interface LspNamesResponse {
+  lsp_names: string[];
+}
+
+export const getLatestPublishedDemands = async (
+  tenantId: string = "FT",
+  limit: number = 10
+): Promise<LatestDemandsResponse> => {
+  const response = await api.get("/demand/latest_success", {
+    params: { tenant_id: tenantId, limit },
   });
-  return response;
+  return response.data;
 };
 
-export default DashboardService;
+export const getLatestFailedDemands = async (
+  tenantId: string = "FT",
+  limit: number = 10
+): Promise<LatestDemandsResponse> => {
+  const response = await api.get("/demand/latest_failed", {
+    params: { tenant_id: tenantId, limit },
+  });
+  return response.data;
+};
+
+export const getChannelSplitData = async (
+  tenantId: string = "FT",
+  entity: string = "demand",
+  fromDate: string,
+  toDate: string
+): Promise<ChannelSplitResponse> => {
+  const response = await api.get("/split/source", {
+    params: { 
+      tenant_id: tenantId, 
+      entity, 
+      from: fromDate, 
+      to: toDate 
+    },
+  });
+  return response.data;
+};
+
+export const getTrendsData = async (
+  tenantId: string = "FT",
+  bucket: string = "day",
+  fromDate: string,
+  toDate: string
+): Promise<TrendsResponse> => {
+  const response = await api.get("/demand/trends", {
+    params: { 
+      tenant_id: tenantId, 
+      bucket, 
+      from: fromDate, 
+      to: toDate 
+    },
+  });
+  return response.data;
+};
+
+export const getOriginSplitData = async (
+  tenantId: string = "FT",
+  entity: string = "demand",
+  fromDate: string,
+  toDate: string,
+  destination: string = "",
+  vehicleId: string = "",
+  lspName: string = ""
+): Promise<ChannelSplitResponse> => {
+  const response = await api.get("/split/origin", {
+    params: { 
+      tenant_id: tenantId, 
+      entity, 
+      from: fromDate, 
+      to: toDate,
+      destination,
+      vehicle_id: vehicleId,
+      lsp_name: lspName
+    },
+  });
+  return response.data;
+};
+
+export const getDestinationSplitData = async (
+  tenantId: string = "FT",
+  entity: string = "demand",
+  fromDate: string,
+  toDate: string,
+  origin: string = "",
+  vehicleId: string = "",
+  lspName: string = ""
+): Promise<ChannelSplitResponse> => {
+  const response = await api.get("/split/destination", {
+    params: { 
+      tenant_id: tenantId, 
+      entity, 
+      from: fromDate, 
+      to: toDate,
+      origin,
+      vehicle_id: vehicleId,
+      lsp_name: lspName
+    },
+  });
+  return response.data;
+};
+
+export const getVehicleSplitData = async (
+  tenantId: string = "FT",
+  entity: string = "demand",
+  fromDate: string,
+  toDate: string,
+  origin: string = "",
+  destination: string = "",
+  lspName: string = "",
+  status: string = ""
+): Promise<ChannelSplitResponse> => {
+  const response = await api.get("/split/vehicle_type", {
+    params: { 
+      tenant_id: tenantId, 
+      entity, 
+      from: fromDate, 
+      to: toDate,
+      origin,
+      destination,
+      lsp_name: lspName,
+      status
+    },
+  });
+  return response.data;
+};
+
+export const getCustomerSplitData = async (
+  tenantId: string = "FT",
+  entity: string = "demand",
+  fromDate: string,
+  toDate: string,
+  origin: string = "",
+  destination: string = "",
+  vehicleId: string = ""
+): Promise<ChannelSplitResponse> => {
+  const response = await api.get("/split/customer", {
+    params: { 
+      tenant_id: tenantId, 
+      entity, 
+      from: fromDate, 
+      to: toDate,
+      origin,
+      destination,
+      vehicle_id: vehicleId
+    },
+  });
+  return response.data;
+};
+
+export const getVehicleMapping = async (
+  tenantId: string = "FT"
+): Promise<VehicleMappingResponse[]> => {
+  const response = await api.get("/tenant-vehicle-mapping", {
+    params: { tenant_id: tenantId },
+  });
+  return response.data;
+};
+
+export const getLspNames = async (
+  tenantId: string = "FT"
+): Promise<LspNamesResponse> => {
+  const response = await api.get("/lsp/names", {
+    params: { tenant_id: tenantId },
+  });
+  return response.data;
+};
+
