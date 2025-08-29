@@ -6,6 +6,15 @@ import {
   clearTokens,
 } from "./token";
 
+// Event emitter for token refresh notifications
+class TokenRefreshEmitter extends EventTarget {
+  emitTokenRefresh() {
+    this.dispatchEvent(new CustomEvent('tokenRefresh'));
+  }
+}
+
+export const tokenRefreshEmitter = new TokenRefreshEmitter();
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
@@ -41,6 +50,9 @@ api.interceptors.response.use(
 
         const { access, refresh } = response.data;
         setTokens(access, refresh);
+
+        // Emit token refresh event to notify components
+        tokenRefreshEmitter.emitTokenRefresh();
 
         originalRequest.headers.Authorization = `Bearer ${access}`;
         return axios(originalRequest);

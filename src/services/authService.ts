@@ -1,5 +1,6 @@
 import axios from "axios";
 import { setTokens } from "@/utils/api/token";
+import { tokenRefreshEmitter } from "@/utils/api/api";
 
 const AUTH_URL = "https://freight-tiger-backend.thetailoredai.co/api/token/";
 
@@ -10,6 +11,10 @@ export const login = async (username: string, password: string) => {
   });
   const { access, refresh } = res.data;
   setTokens(access, refresh);
+  
+  // Emit token refresh event for DemandAggregator refresh
+  tokenRefreshEmitter.emitTokenRefresh();
+  
   return res.data;
 };
 
