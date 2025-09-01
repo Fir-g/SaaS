@@ -7,11 +7,11 @@ class GroupApiService extends ApiService {
   private token = config.service_url.token;
 
   async getGroupData<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-    return this.get<T>(endpoint, params, this.token, false);
+    return this.get<T>(endpoint, params, this.token, true);
   }
 
   async postGroupData<T>(endpoint: string, data?: any): Promise<T> {
-    return this.post<T>(endpoint, data, this.token, false);
+    return this.post<T>(endpoint, data, this.token, true);
   }
 }
 

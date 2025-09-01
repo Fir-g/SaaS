@@ -6,7 +6,7 @@ class GmailApiService extends ApiService {
   private token = config.service_url.token;
 
   async getGmailData<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-    return this.get<T>(endpoint, params, this.token, false);
+    return this.get<T>(endpoint, params, this.token, true);
   }
 }
 

@@ -19,7 +19,7 @@ class MemberApiService extends ApiService {
   private token = config.service_url.token;
 
   async postMemberData<T>(endpoint: string, data?: any): Promise<T> {
-    return this.post<T>(endpoint, data, this.token, false);
+    return this.post<T>(endpoint, data, this.token, true);
   }
 }
 
