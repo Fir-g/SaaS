@@ -1,5 +1,5 @@
 import api from "@/utils/api/api";
-import { LatestDemandsResponse } from "@/types/demand";
+import { LatestDemandsResponse, ODVLSPResponse } from "@/types/demand";
 
 export interface ChannelSplitResponse {
   entity: string;
@@ -211,3 +211,29 @@ export const getLspNames = async (
   return response.data;
 };
 
+export const getODVLSPData = async (
+  tenantId: string = "FT",
+  entity: string = "demand",
+  fromDate: string,
+  toDate: string,
+  status: string,
+  origins: string = "",
+  destinations: string = "",
+  lspNames: string = "",
+  vehicleIds: string = ""
+): Promise<ODVLSPResponse> => {
+  const response = await api.get("/aggregate/odv_lsp", {
+    params: { 
+      tenant_id: tenantId, 
+      entity, 
+      from: fromDate, 
+      to: toDate,
+      status,
+      origins,
+      destinations,
+      lsp_names: lspNames,
+      vehicle_ids: vehicleIds
+    },
+  });
+  return response.data;
+};

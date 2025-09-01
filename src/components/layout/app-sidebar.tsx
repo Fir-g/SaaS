@@ -2,7 +2,8 @@ import { useState } from "react"
 import { 
   LayoutDashboard, 
   Users, 
-  Settings, 
+  Settings,
+  Workflow, 
   Truck, 
   BarChart3,
   Package,
@@ -35,12 +36,14 @@ const navigationItems: NavItem[] = [
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Documents", url: "/documents", icon: FileText },
   { title: "Demand Aggregator", url: "/demand-aggregator", icon: Truck },
+  {title:"Integrations", url:"/integrations", icon:Workflow }
 ]
 
 const fulfilmentItems: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Supply Sourcing", subtitle: "Inventory", url: "/inventory", icon: Package },
   { title: "Demand Aggregator", url: "/demand-aggregator", icon: Truck },
+  {title:"Integrations", url:"/integrations", icon:Workflow }
 ]
 
 const onboardingItems: NavItem[] = [

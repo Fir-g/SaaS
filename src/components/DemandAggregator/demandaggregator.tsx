@@ -27,6 +27,10 @@ import TrendChart from "./trend-chart";
 import SplitBarChart from "./split-bar-chart";
 import { TrendingUp, Package, Milestone } from "lucide-react";
 import { tokenRefreshEmitter } from "@/utils/api/api";
+import ODVLSPFilter from "./ODVLSPFilter";
+import ODVLSPTable from "./ODVLSPTable";
+
+
 
 const DemandAggregator = () => {
   const navigate = useNavigate();
@@ -80,6 +84,13 @@ const DemandAggregator = () => {
     origin: "",
     destination: "",
     vehicle: "",
+  });
+
+  const [odvlspFilters, setODVLSPFilters] = useState({
+  origins: [],
+  destinations: [],
+  lsp_names: [],
+  vehicle_ids: []
   });
 
   useEffect(() => {
@@ -274,6 +285,9 @@ const DemandAggregator = () => {
     navigate("/DemandAggregator/spreadsheet");
   };
 
+  const handleODVLSPFiltersChange = (filters: any) => {
+  setODVLSPFilters(filters);
+  };
   // Get current data for display
   const getCurrentChannelData = () => {
     if (channelSplitData && channelSplitData.rows) {
@@ -481,6 +495,20 @@ const DemandAggregator = () => {
                 isLoading={!customerData}
               />
             </div>
+            {/* table section */}
+            <div className="space-y-4 mb-6">
+            <h3 className="text-lg font-semibold">ODV LSP Analysis</h3>
+            
+            {/* ODV LSP Filters */}
+            <ODVLSPFilter onFiltersChange={handleODVLSPFiltersChange} />
+            
+            {/* ODV LSP Table */}
+            <ODVLSPTable
+              dateRange={selectedDateRange}
+              statusParam={selectedStatusParam}
+              filters={odvlspFilters}
+            />
+          </div>
           </div>
         </div>
       )}

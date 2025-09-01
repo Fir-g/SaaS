@@ -16,6 +16,12 @@ import CustomerSupply from "./pages/CustomerSupply";
 import NewOnboarding from "./pages/NewOnboarding";
 import SpreadsheetPage from "./pages/spreadsheet";
 import DemandAggregator from "./pages/DemandAggregator";
+import IntegrationsPage from "./pages/Integration";
+import WhatsappIntegrationLanding from "./pages/whatsapp-integration";
+import ConnectQR from "./pages/whatsapp-integration/connect-qr";
+import SelectTeamMembersPage from "./pages/whatsapp-integration/select-members";
+import GmailIntegrationPage from "./pages/gmail-integration";
+import GoogleSheetsIntegrationPage from "./pages/google-sheets-integration";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +52,17 @@ const App = () => (
               <Route path="/demand-aggregator" element={<DemandAggregator />} />
               <Route path="/demand-aggregator" element={<div className="p-8 text-center text-muted-foreground">Demand-aggregator page coming soon...</div>} />
               <Route path="/demand-aggregator/spreadsheet" element={<SpreadsheetPage />} />
+
+
+              <Route path="/integrations" element={<IntegrationsPage />} />
+              <Route path="/gmail-integration" element={<GmailIntegrationPage />} />
+              <Route path="/whatsapp-integration" element={<WhatsappIntegrationLanding />} />
+              <Route path="/whatsapp" element={<ConnectQR />} />
+              <Route
+                path="/whatsapp/team-members"
+                element={<SelectTeamMembersPage />}
+              />
+              <Route path="/google-sheets-integration" element={<GoogleSheetsIntegrationPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </DashboardLayout>
