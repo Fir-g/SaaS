@@ -19,16 +19,15 @@ import {
   VehicleMappingResponse,
 } from "@/services/demandAggregatorService";
 import { DemandEntry } from "@/types/demand";
-import { startAuthHeartbeat } from "@/services/authService";
 import NewDemandAggregator from "./new-demandaggregator";
 import DemandAggregatorFilters from "./demandaggregator-filters";
 import ChannelSplitPie, { COLORS } from "./channel-split-pie";
 import TrendChart from "./trend-chart";
 import SplitBarChart from "./split-bar-chart";
 import { TrendingUp, Package, Milestone } from "lucide-react";
-import { tokenRefreshEmitter } from "@/utils/api/api";
 import ODVLSPFilter from "./ODVLSPFilter";
 import ODVLSPTable from "./ODVLSPTable";
+import config from '@/config';
 
 
 
@@ -93,9 +92,8 @@ const DemandAggregator = () => {
   vehicle_ids: []
   });
 
-  useEffect(() => {
-    startAuthHeartbeat();
-  }, []);
+  // Get token from config
+  const token = config.service_url.token;
 
   // Function to refresh all DemandAggregator data
   const refreshAllDemandAggregatorData = async () => {
@@ -123,23 +121,6 @@ const DemandAggregator = () => {
       );
     }
   };
-
-  // Listen for token refresh events
-  useEffect(() => {
-    const handleTokenRefresh = () => {
-      console.log("Token refreshed, refreshing DemandAggregator data...");
-      refreshAllDemandAggregatorData();
-    };
-
-    tokenRefreshEmitter.addEventListener("tokenRefresh", handleTokenRefresh);
-
-    return () => {
-      tokenRefreshEmitter.removeEventListener(
-        "tokenRefresh",
-        handleTokenRefresh
-      );
-    };
-  }, [selectedDateRange, selectedBucket, selectedStatusParam]);
 
   useEffect(() => {
     const fetchData = async () => {

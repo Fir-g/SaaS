@@ -1,11 +1,26 @@
 import { WhatsAppGroupType, WhitelistedGroupType } from "@/types/groups";
-import api from "@/utils/api/api";
-import qrApi from "@/utils/api/qrApi";
+import { ApiService } from "./api";
+import config from '@/config';
+
+// Create an instance of ApiService for group services
+class GroupApiService extends ApiService {
+  private token = config.service_url.token;
+
+  async getGroupData<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+    return this.get<T>(endpoint, params, this.token, false);
+  }
+
+  async postGroupData<T>(endpoint: string, data?: any): Promise<T> {
+    return this.post<T>(endpoint, data, this.token, false);
+  }
+}
+
+const groupApi = new GroupApiService();
 
 export const getWhitelistedGroups = async (tenantId: string) => {
   try {
-    const response = await api.get(`/${tenantId}/whitelisted-entries`);
-    return response.data.entries;
+    const response = await groupApi.getGroupData<{entries: WhitelistedGroupType[]}>(`/${tenantId}/whitelisted-entries`);
+    return response.entries;
   } catch (error) {
     console.error("Error in service:", error);
     throw new Error("Failed to fetch groups");
@@ -14,9 +29,9 @@ export const getWhitelistedGroups = async (tenantId: string) => {
 
 export const getWhatsAppGroups = async (phoneNumber: string) => {
   try {
-    const response: { success: boolean; chats: WhatsAppGroupType[] } =
-      await qrApi.get(`/api/instances/${phoneNumber}/chats`);
-    // console.log(response);
+    // For WhatsApp groups, we'll need to use a different approach since qrApi was external
+    // This might need to be updated based on your actual WhatsApp API integration
+    const response = await groupApi.getGroupData<{ success: boolean; chats: WhatsAppGroupType[] }>(`/api/instances/${phoneNumber}/chats`);
     return response.chats;
   } catch (error) {
     console.error("Error in service:", error);
@@ -29,13 +44,11 @@ export const postWhitelistedGroups = async (
 ) => {
   try {
     const tenantId = whitelistedGroups?.[0]?.tenant_id || "FT";
-    const response = await api.post("/whitelist/bulk", {
+    const response = await groupApi.postGroupData("/whitelist/bulk", {
       tenant_id: tenantId,
       entries: whitelistedGroups,
     });
-    if (response.status == 200) {
-      console.log("successfully added groups to whitelist");
-    }
+    console.log("successfully added groups to whitelist");
   } catch (error) {
     throw new Error(`Error fetching whitelisted groups: ${error}`);
   }
@@ -44,8 +57,7 @@ export const postWhitelistedGroups = async (
 // Blacklist (exclusion list) services
 export const getBlacklistedNumbers = async (tenantId: string): Promise<string[]> => {
   try {
-    const response = await api.get(`/${tenantId}/blacklisted-numbers`);
-    const data = response.data;
+    const data = await groupApi.getGroupData<any>(`/${tenantId}/blacklisted-numbers`);
     const toStrings = (arr: any[]): string[] => {
       if (!Array.isArray(arr)) return [];
       const values = arr.map((item) => {
@@ -72,7 +84,7 @@ export const postBlacklistedNumbers = async (
   phoneNumbers: string[]
 ) => {
   try {
-    await api.post(`/blacklist`, {
+    await groupApi.postGroupData(`/blacklist`, {
       tenant_id: tenantId,
       phone_numbers: phoneNumbers,
     });

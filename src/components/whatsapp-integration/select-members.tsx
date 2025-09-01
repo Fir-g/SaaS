@@ -5,14 +5,25 @@ import { useEffect, useRef, useState } from "react";
 
 import NextButton from "@/components/ui/next-button";
 import PageWrapper from "@/components/ui/page-wrapper";
-import api from "@/utils/api/api";
+import { ApiService } from "@/services/api";
+import config from '@/config';
 import { Button } from "@/components/ui/button";
 import { getBlacklistedContacts } from "@/services/contactService";
 import { BlacklistedContact } from "@/types/contacts";
 import ContactList from "./contact-list";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-// import MembersModal from "./members-modal";
+
+// Create an instance of ApiService for member services
+class MemberApiService extends ApiService {
+  private token = config.service_url.token;
+
+  async postMemberData<T>(endpoint: string, data?: any): Promise<T> {
+    return this.post<T>(endpoint, data, this.token, false);
+  }
+}
+
+const memberApi = new MemberApiService();
 
 const SelectTeamMembers = () => {
   const [fetchedContacts, setFetchedContacts] = useState<string[]>([]);
@@ -42,13 +53,11 @@ const SelectTeamMembers = () => {
 
     if (combinedContacts.length > 0) {
       try {
-        const response = await api.post("/sqldb/blacklist", {
+        await memberApi.postMemberData("/sqldb/blacklist", {
           tenant_id: tenant_id,
           phone_numbers: combinedContacts,
         });
-        if (response.status == 200) {
-          console.log("successfully added contacts to blacklist");
-        }
+        console.log("successfully added contacts to blacklist");
       } catch (error) {
         throw new Error(`Error fetching blacklisted numbers: ${error}`);
       }

@@ -1,4 +1,16 @@
-import api from "@/utils/api/api";
+import { ApiService } from "./api";
+import config from '@/config';
+
+// Create an instance of ApiService for Gmail services
+class GmailApiService extends ApiService {
+  private token = config.service_url.token;
+
+  async getGmailData<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+    return this.get<T>(endpoint, params, this.token, false);
+  }
+}
+
+const gmailApi = new GmailApiService();
 
 export type GmailAuthResponse = {
   auth_url: string;
@@ -6,11 +18,8 @@ export type GmailAuthResponse = {
 };
 
 export const getGmailAuthUrl = async (): Promise<GmailAuthResponse> => {
-  // Use absolute URL (different backend root), but keep our api instance for auth headers
-  const res = await api.get(
-    "https://freight-tiger-backend.thetailoredai.co/gmail_login/auth-url"
-  );
-  return res.data as GmailAuthResponse;
+  // Note: This endpoint might need to be updated based on your actual Gmail API integration
+  return gmailApi.getGmailData<GmailAuthResponse>("/gmail_login/auth-url");
 };
 
 
