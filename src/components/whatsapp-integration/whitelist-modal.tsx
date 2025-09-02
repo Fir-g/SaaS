@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { useAuth } from "@clerk/clerk-react";
 import {
   getWhatsAppGroups,
   getWhitelistedGroups,
@@ -20,6 +21,12 @@ export default function WhitelistModal({
   isOpen,
   onClose,
 }: WhitelistModalProps) {
+  const { getToken } = useAuth();
+  const getClerkBearer = useCallback(async () => {
+    const template = import.meta.env.VITE_CLERK_TOKEN_TEMPLATE as string | undefined;
+    return getToken({ template, skipCache: true });
+  }, [getToken]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [fetchedGroups, setFetchedGroups] = useState<WhitelistedGroupType[]>([]);
@@ -32,9 +39,10 @@ export default function WhitelistModal({
       try {
         setLoading(true);
         setError("");
+        const token = await getClerkBearer();
         const [whitelisted, waGroups] = await Promise.all([
-          getWhitelistedGroups(tenantId),
-          getWhatsAppGroups(phoneNumber),
+          getWhitelistedGroups(tenantId, token),
+          getWhatsAppGroups(phoneNumber, token),
         ]);
         const filtered = (whitelisted || []).filter(
           (e: WhitelistedGroupType) => e.phone_number === phoneNumber
@@ -50,7 +58,7 @@ export default function WhitelistModal({
       }
     };
     load();
-  }, [isOpen, tenantId, phoneNumber]);
+  }, [isOpen, tenantId, phoneNumber, getClerkBearer]);
 
   const combinedGroup = useMemo(
     () =>
@@ -93,7 +101,8 @@ export default function WhitelistModal({
   };
 
   const handleSave = async () => {
-    await postWhitelistedGroups(whitelistedGroups);
+    const token = await getClerkBearer();
+    await postWhitelistedGroups(whitelistedGroups, token);
     onClose();
   };
 
@@ -125,5 +134,3 @@ export default function WhitelistModal({
     </div>
   );
 }
-
-

@@ -2,12 +2,12 @@ import { useState } from "react"
 import { 
   LayoutDashboard, 
   Users, 
-  Settings,
-  Workflow, 
+  Settings, 
   Truck, 
   BarChart3,
   Package,
   MapPin,
+  Workflow,
   FileText
 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
@@ -23,6 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+
   useSidebar,
 } from "@/components/ui/sidebar"
 import { OrganizationSwitcher } from "@/components/ui/organization-switcher"
@@ -43,7 +44,7 @@ const fulfilmentItems: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Supply Sourcing", subtitle: "Inventory", url: "/inventory", icon: Package },
   { title: "Demand Aggregator", url: "/demand-aggregator", icon: Truck },
-  {title:"Integrations", url:"/integrations", icon:Workflow }
+  {title:"Integrations", url:"/integrations", icon:Workflow },
 ]
 
 const onboardingItems: NavItem[] = [

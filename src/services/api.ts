@@ -1,7 +1,7 @@
 import config from '../config';
 
 const API_BASE_URL = config.service_url.API_BASE_URL;
-
+console.log("API_BASE_URL", API_BASE_URL);
 // Request interceptor - will be called with token from component
 const requestInterceptor = (url: string, options: RequestInit = {}, token?: string | null, useBearerToken: boolean = false) => {
   const headers: Record<string, string> = {
@@ -60,18 +60,8 @@ const responseInterceptor = async (response: Response) => {
 // Centralized fetch with interceptors
 export const apiFetch = async (url: string, options: RequestInit = {}, token?: string | null, useBearerToken: boolean = false) => {
   const { url: interceptedUrl, options: interceptedOptions } = requestInterceptor(url, options, token, useBearerToken);
-  
-  
-  
-  try {
     const response = await fetch(interceptedUrl, interceptedOptions);
-    
-    
     return await responseInterceptor(response);
-  } catch (error) {
-    
-    throw error;
-  }
 };
 
 // API Service class

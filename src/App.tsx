@@ -22,6 +22,11 @@ import ConnectQR from "./pages/whatsapp-integration/connect-qr";
 import SelectTeamMembersPage from "./pages/whatsapp-integration/select-members";
 import GmailIntegrationPage from "./pages/gmail-integration";
 import GoogleSheetsIntegrationPage from "./pages/google-sheets-integration";
+import SelectGrouptoRead from "./pages/whatsapp-integration/select-group";
+import IntegrationcompletePage from "./pages/whatsapp-integration/integration-complete";
+import CRMLoginPage from "./pages/crm-integration/crm-login";
+import UploadMasterDataPage from "./pages/crm-integration/upload-master-data";
+import CRMSetupCompletePage from "./pages/crm-integration/complete-setup";
 
 const queryClient = new QueryClient();
 
@@ -49,20 +54,24 @@ const App = () => (
               <Route path="/tracking" element={<div className="p-8 text-center text-muted-foreground">Tracking page coming soon...</div>} />
               <Route path="/analytics" element={<div className="p-8 text-center text-muted-foreground">Analytics page coming soon...</div>} />
               <Route path="/documents" element={<div className="p-8 text-center text-muted-foreground">Documents page coming soon...</div>} />
+              
+              {/* Fixed: Removed duplicate route */}
               <Route path="/demand-aggregator" element={<DemandAggregator />} />
-              <Route path="/demand-aggregator" element={<div className="p-8 text-center text-muted-foreground">Demand-aggregator page coming soon...</div>} />
               <Route path="/demand-aggregator/spreadsheet" element={<SpreadsheetPage />} />
-
 
               <Route path="/integrations" element={<IntegrationsPage />} />
               <Route path="/gmail-integration" element={<GmailIntegrationPage />} />
               <Route path="/whatsapp-integration" element={<WhatsappIntegrationLanding />} />
               <Route path="/whatsapp" element={<ConnectQR />} />
-              <Route
-                path="/whatsapp/team-members"
-                element={<SelectTeamMembersPage />}
-              />
+              <Route path="/whatsapp/team-members" element={<SelectTeamMembersPage />} />
+              <Route path="/whatsapp/group" element={<SelectGrouptoRead />} />
               <Route path="/google-sheets-integration" element={<GoogleSheetsIntegrationPage />} />
+              <Route path="/whatsapp/success" element={<IntegrationcompletePage />} />
+
+
+              <Route path="/crm" element={<CRMLoginPage />} />
+              <Route path="/upload-data" element={<UploadMasterDataPage />} />
+              <Route path="/crm-success" element={<CRMSetupCompletePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </DashboardLayout>

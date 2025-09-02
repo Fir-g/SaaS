@@ -2,9 +2,10 @@ import NextButton from "@/components/ui/next-button";
 
 const IntegrationComplete = () => {
   return (
-    <div className="flex flex-col w-full h-screen py-6 px-12 pt-20">
-      <div className="space-y-12">
-        <div className="space-y-4 flex flex-col justify-center items-center">
+    <div className="flex flex-col min-h-screen py-6 px-12 pt-20">
+      {/* Main content area that grows to fill space */}
+      <div className="flex-1 flex flex-col justify-center items-center space-y-12">
+        <div className="space-y-4 flex flex-col justify-center items-center text-center">
           <div className="mb-4">
             <img
               src="/success.svg"
@@ -13,15 +14,18 @@ const IntegrationComplete = () => {
             />
           </div>
           <div className="text-gray-800 text-3xl font-semibold">
-            Whatsapp integration verified
+            WhatsApp integration verified
           </div>
-          <p className="text-gray-500 text-muted-foreground text-lg">
-            Please click on complete setup to finish the integration of Whatsapp
+          <p className="text-gray-500 text-lg max-w-md">
+            Please click on complete setup to finish the integration of WhatsApp
           </p>
         </div>
       </div>
 
-      <NextButton nextPageUrl="/integrations" text="Finish Setup" />
+      {/* Button area that stays at bottom */}
+      <div className="mt-8">
+        <NextButton nextPageUrl="/integrations" text="Finish Setup" />
+      </div>
     </div>
   );
 };

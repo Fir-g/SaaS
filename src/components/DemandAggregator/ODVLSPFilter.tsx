@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '@clerk/clerk-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +38,7 @@ const LOCATIONS = [
 ];
 
 const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
+  const { getToken } = useAuth();
   const [filters, setFilters] = useState<ODVLSPFilters>({
     origins: [],
     destinations: [],
@@ -58,14 +60,17 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
   useEffect(() => {
     const fetchFilterData = async () => {
       try {
+        const template = import.meta.env.VITE_CLERK_TOKEN_TEMPLATE as string | undefined;
+        const token = await getToken({ template, skipCache: true });
         const [lspResponse, vehicleResponse] = await Promise.all([
-          getLspNames("FT"),
-          getVehicleMapping("FT")
+          getLspNames("FT", token),
+          getVehicleMapping("FT", token)
         ]);
         
         setAvailableLsps(lspResponse.lsp_names || []);
+        const vehicles = Array.isArray(vehicleResponse) ? vehicleResponse : [];
         setAvailableVehicles(
-          vehicleResponse.map(v => ({
+          vehicles.map(v => ({
             id: v.vehicle_id,
             name: v.vehicle_name
           }))

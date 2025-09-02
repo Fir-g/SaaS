@@ -1,12 +1,21 @@
-import { ApiService } from "./api";
-import config from '@/config';
+import { ApiService } from "@/services/api";
 
-// Create an instance of ApiService for Gmail services
+// Get the API URL from environment variables
+const GMAIL_API = import.meta.env.VITE_GMAIL_API as string | undefined;
+
 class GmailApiService extends ApiService {
-  private token = config.service_url.token;
+  constructor() {
+    super();
+    if (!GMAIL_API) {
+      throw new Error("VITE_GMAIL_API is not set");
+    }
+    // Override base URL like other services
+    this.baseUrl = GMAIL_API as unknown as string;
+  }
 
-  async getGmailData<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-    return this.get<T>(endpoint, params, this.token, true);
+  // Always use direct base URL, do not proxy
+  protected getApiUrl(endpoint: string): string {
+    return `${GMAIL_API}${endpoint}`;
   }
 }
 
@@ -17,9 +26,34 @@ export type GmailAuthResponse = {
   state: string;
 };
 
-export const getGmailAuthUrl = async (): Promise<GmailAuthResponse> => {
-  // Note: This endpoint might need to be updated based on your actual Gmail API integration
-  return gmailApi.getGmailData<GmailAuthResponse>("/gmail_login/auth-url");
+export type GmailConnectionStatus = {
+  connected: boolean;
+  email?: string;
+  connected_at?: string;
+  last_sync?: string;
 };
 
+// Get Gmail OAuth URL
+export const getGmailAuthUrl = async (token: string | null): Promise<GmailAuthResponse> => {
+  return gmailApi.get<GmailAuthResponse>("/gmail_login/auth-url", {}, token, true);
+};
 
+// Check Gmail connection status
+export const getGmailStatus = async (token: string | null): Promise<GmailConnectionStatus> => {
+  try {
+    return gmailApi.get<GmailConnectionStatus>("/gmail/status", {}, token, true);
+  } catch (error) {
+    console.error("Error checking Gmail status:", error);
+    throw new Error("Failed to check Gmail connection status");
+  }
+};
+
+// Disconnect Gmail integration
+export const disconnectGmail = async (token: string | null): Promise<void> => {
+  try {
+    await gmailApi.post("/gmail/disconnect", {}, token, true);
+  } catch (error) {
+    console.error("Error disconnecting Gmail:", error);
+    throw new Error("Failed to disconnect Gmail");
+  }
+};

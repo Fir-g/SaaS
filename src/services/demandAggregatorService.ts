@@ -1,17 +1,25 @@
-import { ApiService } from "./api";
 import { LatestDemandsResponse, ODVLSPResponse } from "@/types/demand";
-import config from '@/config';
+import { ApiService } from "@/services/api";
 
-// Create an instance of ApiService for demand aggregator
+const DEMAND_AGGREGATOR_API = import.meta.env.VITE_DEMAND_AGGREGATOR_API as string | undefined;
+
 class DemandAggregatorApiService extends ApiService {
-  private token = config.service_url.token;
+  constructor() {
+    super();
+    if (!DEMAND_AGGREGATOR_API) {
+      throw new Error("VITE_DEMAND_AGGREGATOR_API is not set");
+    }
+    // Override base URL to segregate from default API
+    this.baseUrl = DEMAND_AGGREGATOR_API as unknown as string;
+  }
 
-  async getDemandData<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-    return this.get<T>(endpoint, params, this.token, true);
+  // Always use direct base URL, do not proxy
+  protected getApiUrl(endpoint: string): string {
+    return `${DEMAND_AGGREGATOR_API}${endpoint}`;
   }
 }
 
-const demandAggregatorApi = new DemandAggregatorApiService();
+const daService = new DemandAggregatorApiService();
 
 export interface ChannelSplitResponse {
   entity: string;
@@ -49,22 +57,28 @@ export interface LspNamesResponse {
 
 export const getLatestPublishedDemands = async (
   tenantId: string = "FT",
-  limit: number = 10
+  limit: number = 10,
+  token?: string | null
 ): Promise<LatestDemandsResponse> => {
-  return demandAggregatorApi.getDemandData<LatestDemandsResponse>("/demand/latest_success", {
-    tenant_id: tenantId,
-    limit
-  });
+  return daService.get<LatestDemandsResponse>(
+    "/demand/latest_success",
+    { tenant_id: tenantId, limit },
+    token,
+    true
+  );
 };
 
 export const getLatestFailedDemands = async (
   tenantId: string = "FT",
-  limit: number = 10
+  limit: number = 10,
+  token?: string | null
 ): Promise<LatestDemandsResponse> => {
-  return demandAggregatorApi.getDemandData<LatestDemandsResponse>("/demand/latest_failed", {
-    tenant_id: tenantId,
-    limit
-  });
+  return daService.get<LatestDemandsResponse>(
+    "/demand/latest_failed",
+    { tenant_id: tenantId, limit },
+    token,
+    true
+  );
 };
 
 export const getChannelSplitData = async (
@@ -72,15 +86,15 @@ export const getChannelSplitData = async (
   entity: string = "demand",
   fromDate: string,
   toDate: string,
-  status: string
+  status: string,
+  token?: string | null
 ): Promise<ChannelSplitResponse> => {
-  return demandAggregatorApi.getDemandData<ChannelSplitResponse>("/split/source", {
-    tenant_id: tenantId,
-    entity,
-    from: fromDate,
-    to: toDate,
-    status
-  });
+  return daService.get<ChannelSplitResponse>(
+    "/split/source",
+    { tenant_id: tenantId, entity, from: fromDate, to: toDate, status },
+    token,
+    true
+  );
 };
 
 export const getTrendsData = async (
@@ -88,15 +102,15 @@ export const getTrendsData = async (
   bucket: string = "day",
   fromDate: string,
   toDate: string,
-  status: string = ""
+  status: string = "",
+  token?: string | null
 ): Promise<TrendsResponse> => {
-  return demandAggregatorApi.getDemandData<TrendsResponse>("/demand/trends", {
-    tenant_id: tenantId,
-    bucket,
-    from: fromDate,
-    to: toDate,
-    status
-  });
+  return daService.get<TrendsResponse>(
+    "/demand/trends",
+    { tenant_id: tenantId, bucket, from: fromDate, to: toDate, status },
+    token,
+    true
+  );
 };
 
 export const getOriginSplitData = async (
@@ -107,18 +121,15 @@ export const getOriginSplitData = async (
   destination: string = "",
   vehicleId: string = "",
   lspName: string = "",
-  status: string = ""
+  status: string = "",
+  token?: string | null
 ): Promise<ChannelSplitResponse> => {
-  return demandAggregatorApi.getDemandData<ChannelSplitResponse>("/split/origin", {
-    tenant_id: tenantId,
-    entity,
-    from: fromDate,
-    to: toDate,
-    destination,
-    vehicle_id: vehicleId,
-    lsp_name: lspName,
-    status
-  });
+  return daService.get<ChannelSplitResponse>(
+    "/split/origin",
+    { tenant_id: tenantId, entity, from: fromDate, to: toDate, destination, vehicle_id: vehicleId, lsp_name: lspName, status },
+    token,
+    true
+  );
 };
 
 export const getDestinationSplitData = async (
@@ -129,18 +140,15 @@ export const getDestinationSplitData = async (
   origin: string = "",
   vehicleId: string = "",
   lspName: string = "",
-  status: string = ""
+  status: string = "",
+  token?: string | null
 ): Promise<ChannelSplitResponse> => {
-  return demandAggregatorApi.getDemandData<ChannelSplitResponse>("/split/destination", {
-    tenant_id: tenantId,
-    entity,
-    from: fromDate,
-    to: toDate,
-    origin,
-    vehicle_id: vehicleId,
-    lsp_name: lspName,
-    status
-  });
+  return daService.get<ChannelSplitResponse>(
+    "/split/destination",
+    { tenant_id: tenantId, entity, from: fromDate, to: toDate, origin, vehicle_id: vehicleId, lsp_name: lspName, status },
+    token,
+    true
+  );
 };
 
 export const getVehicleSplitData = async (
@@ -151,18 +159,15 @@ export const getVehicleSplitData = async (
   origin: string = "",
   destination: string = "",
   lspName: string = "",
-  vehicleStatus: string = ""
+  vehicleStatus: string = "",
+  token?: string | null
 ): Promise<ChannelSplitResponse> => {
-  return demandAggregatorApi.getDemandData<ChannelSplitResponse>("/split/vehicle_type", {
-    tenant_id: tenantId,
-    entity,
-    from: fromDate,
-    to: toDate,
-    origin,
-    destination,
-    lsp_name: lspName,
-    status: vehicleStatus
-  });
+  return daService.get<ChannelSplitResponse>(
+    "/split/vehicle_type",
+    { tenant_id: tenantId, entity, from: fromDate, to: toDate, origin, destination, lsp_name: lspName, status: vehicleStatus },
+    token,
+    true
+  );
 };
 
 export const getCustomerSplitData = async (
@@ -173,34 +178,39 @@ export const getCustomerSplitData = async (
   origin: string = "",
   destination: string = "",
   vehicleId: string = "",
-  status: string = ""
+  status: string = "",
+  token?: string | null
 ): Promise<ChannelSplitResponse> => {
-  return demandAggregatorApi.getDemandData<ChannelSplitResponse>("/split/customer", {
-    tenant_id: tenantId,
-    entity,
-    from: fromDate,
-    to: toDate,
-    origin,
-    destination,
-    vehicle_id: vehicleId,
-    status
-  });
+  return daService.get<ChannelSplitResponse>(
+    "/split/customer",
+    { tenant_id: tenantId, entity, from: fromDate, to: toDate, origin, destination, vehicle_id: vehicleId, status },
+    token,
+    true
+  );
 };
 
 export const getVehicleMapping = async (
-  tenantId: string = "FT"
+  tenantId: string = "FT",
+  token?: string | null
 ): Promise<VehicleMappingResponse[]> => {
-  return demandAggregatorApi.getDemandData<VehicleMappingResponse[]>("/tenant-vehicle-mapping", {
-    tenant_id: tenantId
-  });
+  return daService.get<VehicleMappingResponse[]>(
+    "/tenant-vehicle-mapping",
+    { tenant_id: tenantId },
+    token,
+    true
+  );
 };
 
 export const getLspNames = async (
-  tenantId: string = "FT"
+  tenantId: string = "FT",
+  token?: string | null
 ): Promise<LspNamesResponse> => {
-  return demandAggregatorApi.getDemandData<LspNamesResponse>("/lsp/names", {
-    tenant_id: tenantId
-  });
+  return daService.get<LspNamesResponse>(
+    "/lsp/names",
+    { tenant_id: tenantId },
+    token,
+    true
+  );
 };
 
 export const getODVLSPData = async (
@@ -212,17 +222,13 @@ export const getODVLSPData = async (
   origins: string = "",
   destinations: string = "",
   lspNames: string = "",
-  vehicleIds: string = ""
+  vehicleIds: string = "",
+  token?: string | null
 ): Promise<ODVLSPResponse> => {
-  return demandAggregatorApi.getDemandData<ODVLSPResponse>("/aggregate/odv_lsp", {
-    tenant_id: tenantId,
-    entity,
-    from: fromDate,
-    to: toDate,
-    status,
-    origins,
-    destinations,
-    lsp_names: lspNames,
-    vehicle_ids: vehicleIds
-  });
+  return daService.get<ODVLSPResponse>(
+    "/aggregate/odv_lsp",
+    { tenant_id: tenantId, entity, from: fromDate, to: toDate, status, origins, destinations, lsp_names: lspNames, vehicle_ids: vehicleIds },
+    token,
+    true
+  );
 };

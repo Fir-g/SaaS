@@ -6,7 +6,7 @@ import Loader from "./loader";
 type NextButtonPropsType = {
   nextPageUrl: string;
   text: string;
-  handleClick?: () => void;
+  handleClick?: () => void | Promise<void>;
   disabled?: boolean;
   loading?: boolean;
 };
@@ -16,28 +16,36 @@ const NextButton = ({
   nextPageUrl,
   text,
   disabled = false,
+  loading = false,
 }: NextButtonPropsType) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
-    if (isLoading || disabled) return;
-    try {
-      setIsLoading(true);
-      await onClick();
-    } finally {
-      setIsLoading(false);
+    if (isLoading || disabled || loading) return;
+    
+    if (handleClick) {
+      try {
+        setIsLoading(true);
+        await handleClick(); // ✅ Call the passed handleClick function
+      } catch (error) {
+        console.error("Error in handleClick:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
+
+  const isButtonLoading = isLoading || loading;
+
   return (
     <div className="flex mt-auto justify-end border-t-2 pt-6">
       <Link to={nextPageUrl}>
         <Button
-          asChild
-          className="px-12 bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={disabled || isLoading}
-          onClick={handleClick}
+          className="px-12 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={disabled || isButtonLoading}
+          onClick={onClick}
         >
-          {isLoading ? <Loader /> : text}
+          {isButtonLoading ? <Loader /> : text}
         </Button>
       </Link>
     </div>

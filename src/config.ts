@@ -11,7 +11,7 @@ const allConfigs = {
  
   development: {
     service_url: {
-      API_BASE_URL: "/api", // Always use proxy for development
+      API_BASE_URL: "http://127.0.0.1:8000/sqldb", // Always use proxy for development
       ACL_SERVICE_URL: "https://access-control-service.qa.freighttiger.com",
       VITE_GOOGLE_CLIENT_ID: "489385389007-aondcivgkud2ahk65vg32a2j65hn9tpe.apps.googleusercontent.com",
       VITE_GOOGLE_AUTH : "https://accounts.google.com/gsi/client",

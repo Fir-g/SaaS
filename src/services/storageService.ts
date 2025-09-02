@@ -1,20 +1,29 @@
-import { ApiService } from "./api";
-import config from '@/config';
+import { ApiService } from "@/services/api";
 
-// Create an instance of ApiService for storage services
+// Get the API URL from environment variables
+const STORAGE_API = import.meta.env.VITE_STORAGE_API as string | undefined;
+
 class StorageApiService extends ApiService {
-  private token = config.service_url.token;
+  constructor() {
+    super();
+    if (!STORAGE_API) {
+      throw new Error("VITE_STORAGE_API is not set");
+    }
+    // Override base URL like DemandAggregator does
+    this.baseUrl = STORAGE_API as unknown as string;
+  }
 
-  async getStorageData<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-    return this.get<T>(endpoint, params, this.token, true);
+  // Always use direct base URL, do not proxy
+  protected getApiUrl(endpoint: string): string {
+    return `${STORAGE_API}${endpoint}`;
   }
 }
 
 const storageApi = new StorageApiService();
 
-export const getTenantInstances = async (tenantId:string) => {
+export const getTenantInstances = async (tenantId: string, token?: string | null) => {
   try {
-    return storageApi.getStorageData<any>(`/instances/${tenantId}/tenant-instances`);
+    return storageApi.get<any>(`/instances/${tenantId}/tenant-instances`, {}, token, true);
   } catch (error) {
     console.error("Error in service:", error);
     throw new Error("Failed to fetch instances");

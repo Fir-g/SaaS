@@ -2,7 +2,7 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import DemandCard from "./demand-card";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   getLatestFailedDemands,
   getLatestPublishedDemands,
@@ -19,6 +19,7 @@ import {
   VehicleMappingResponse,
 } from "@/services/demandAggregatorService";
 import { DemandEntry } from "@/types/demand";
+import { useAuth } from "@clerk/clerk-react";
 import NewDemandAggregator from "./new-demandaggregator";
 import DemandAggregatorFilters from "./demandaggregator-filters";
 import ChannelSplitPie, { COLORS } from "./channel-split-pie";
@@ -27,12 +28,16 @@ import SplitBarChart from "./split-bar-chart";
 import { TrendingUp, Package, Milestone } from "lucide-react";
 import ODVLSPFilter from "./ODVLSPFilter";
 import ODVLSPTable from "./ODVLSPTable";
-import config from '@/config';
 
 
 
 const DemandAggregator = () => {
   const navigate = useNavigate();
+  const { getToken } = useAuth();
+  const getClerkBearer = useCallback(async () => {
+    const template = import.meta.env.VITE_CLERK_TOKEN_TEMPLATE as string | undefined;
+    return getToken({ template, skipCache: true });
+  }, [getToken]);
   const isDemandAggregatorData = true;
   const [latestSuccess, setLatestSuccess] = useState<DemandEntry[]>([]);
   const [latestFailed, setLatestFailed] = useState<DemandEntry[]>([]);
@@ -92,16 +97,16 @@ const DemandAggregator = () => {
   vehicle_ids: []
   });
 
-  // Get token from config
-  const token = config.service_url.token;
+  // Remove custom auth heartbeat; Clerk handles session lifecycle
 
-  // Function to refresh all DemandAggregator data
+  // Function to refresh all DemandAggregator data using Clerk token
   const refreshAllDemandAggregatorData = async () => {
     try {
+      const token = await getClerkBearer();
       // Refresh latest demands
       const [successRes, failedRes] = await Promise.all([
-        getLatestPublishedDemands("FT", 10),
-        getLatestFailedDemands("FT", 10),
+        getLatestPublishedDemands("FT", 10, token),
+        getLatestFailedDemands("FT", 10, token),
       ]);
       setLatestSuccess(successRes.entries || []);
       setLatestFailed(failedRes.entries || []);
@@ -122,12 +127,15 @@ const DemandAggregator = () => {
     }
   };
 
+  // No custom token refresh event listener needed with Clerk
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = await getClerkBearer();
         const [successRes, failedRes] = await Promise.all([
-          getLatestPublishedDemands("FT", 10),
-          getLatestFailedDemands("FT", 10),
+          getLatestPublishedDemands("FT", 10, token),
+          getLatestFailedDemands("FT", 10, token),
         ]);
         setLatestSuccess(successRes.entries || []);
         setLatestFailed(failedRes.entries || []);
@@ -159,12 +167,14 @@ const DemandAggregator = () => {
 
   const fetchChannelSplitData = async () => {
     try {
+      const token = await getClerkBearer();
       const response = await getChannelSplitData(
         "FT",
         "demand",
         selectedDateRange.from,
         selectedDateRange.to,
-        selectedStatusParam
+        selectedStatusParam,
+        token
       );
       setChannelSplitData(response);
     } catch (error) {
@@ -175,12 +185,14 @@ const DemandAggregator = () => {
 
   const fetchTrendsData = async () => {
     try {
+      const token = await getClerkBearer();
       const response = await getTrendsData(
         "FT",
         selectedBucket,
         selectedDateRange.from,
         selectedDateRange.to,
-        selectedStatusParam
+        selectedStatusParam,
+        token
       );
       setTrendsData(response);
     } catch (error) {
@@ -193,6 +205,7 @@ const DemandAggregator = () => {
     if (!selectedDateRange.from || !selectedDateRange.to) return;
 
     try {
+      const token = await getToken();
       const [originRes, destinationRes, vehicleRes, customerRes] =
         await Promise.all([
           getOriginSplitData(
@@ -203,7 +216,8 @@ const DemandAggregator = () => {
             "",
             "",
             "",
-            selectedStatusParam
+            selectedStatusParam,
+            token
           ),
           getDestinationSplitData(
             "FT",
@@ -213,7 +227,8 @@ const DemandAggregator = () => {
             "",
             "",
             "",
-            selectedStatusParam
+            selectedStatusParam,
+            token
           ),
           getVehicleSplitData(
             "FT",
@@ -223,7 +238,8 @@ const DemandAggregator = () => {
             "",
             "",
             "",
-            selectedStatusParam
+            selectedStatusParam,
+            token
           ),
           getCustomerSplitData(
             "FT",
@@ -233,7 +249,8 @@ const DemandAggregator = () => {
             "",
             "",
             "",
-            selectedStatusParam
+            selectedStatusParam,
+            token
           ),
         ]);
 

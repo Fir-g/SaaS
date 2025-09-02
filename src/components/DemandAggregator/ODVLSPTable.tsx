@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from '@clerk/clerk-react';
 import {
   Table,
   TableBody,
@@ -46,6 +47,7 @@ const ODVLSPTable: React.FC<ODVLSPTableProps> = ({
   statusParam,
   filters,
 }) => {
+  const { getToken } = useAuth();
   const [data, setData] = useState<ODVLSPResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,6 +64,8 @@ const ODVLSPTable: React.FC<ODVLSPTableProps> = ({
   const fetchData = async () => {
     setLoading(true);
     try {
+      const template = import.meta.env.VITE_CLERK_TOKEN_TEMPLATE as string | undefined;
+      const token = await getToken({ template, skipCache: true });
       const response = await getODVLSPData(
         "FT", // tenant_id
         "demand", // entity
@@ -72,7 +76,8 @@ const ODVLSPTable: React.FC<ODVLSPTableProps> = ({
         filters.origins.length > 0 ? filters.origins.join(",") : "",
         filters.destinations.length > 0 ? filters.destinations.join(",") : "",
         filters.lsp_names.length > 0 ? filters.lsp_names.join(",") : "",
-        filters.vehicle_ids.length > 0 ? filters.vehicle_ids.join(",") : ""
+        filters.vehicle_ids.length > 0 ? filters.vehicle_ids.join(",") : "",
+        token
       );
       setData(response);
       setCurrentPage(1); // Reset to first page when data changes
