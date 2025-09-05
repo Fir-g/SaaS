@@ -14,13 +14,13 @@ const LeftSectionWhatsapp = ({
   stepNo,
 }: LeftSectionWhatsappPropType) => {
   return (
-    <div className="flex flex-col h-full w-full lg:w-3/5 bg-[#EEEFFA] py-6 px-6 sm:px-8 lg:px-12">
+    <div className="flex flex-col h-full w-full lg:w-1/4 bg-[#EEEFFA] py-4 px-4 sm:px-6 lg:px-8">
       {/* Header Section */}
-      <div className="mb-6 lg:mb-8">
-        <p className="text-gray-700 text-sm sm:text-base mb-4 lg:mb-6">
+      <div className="mb-4 lg:mb-6">
+        <p className="text-gray-700 text-sm sm:text-base mb-2 lg:mb-3">
           WhatsApp Integration
         </p>
-        <div className="text-gray-800 text-xl sm:text-2xl lg:text-2xl font-semibold mb-2">
+        <div className="text-gray-800 text-lg sm:text-xl lg:text-xl font-semibold mb-1">
           Hello, User!
         </div>
         <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
@@ -38,7 +38,7 @@ const LeftSectionWhatsapp = ({
       </div>
 
       {/* Bottom Action Button */}
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-4">
         <Button
           variant="outline"
           className="flex items-center justify-center text-gray-800 text-base sm:text-lg font-medium w-full sm:w-auto px-6 py-3 gap-3 hover:bg-white/50 transition-colors"

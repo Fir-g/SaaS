@@ -5,7 +5,9 @@ const IntegrationcompletePage = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-background">
       <LeftSectionWhatsapp currentStep={"Finish Setting up WhatsApp"} stepNo={4}/>
-      <IntegrationComplete />
+      <div className="flex-1 lg:w-3/4">
+        <IntegrationComplete />
+      </div>
     </div>
   );
 };

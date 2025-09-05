@@ -8,6 +8,7 @@ import { getGmailAuthUrl } from "@/services/gmailService";
 const IntegrationsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"demand" | "supply">("demand");
   const navigate = useNavigate();
+  
   const handleConnect = async (integrationId: string, integrationUrl: string) => {
     if (integrationId === "gmail") {
       try {
@@ -24,8 +25,8 @@ const IntegrationsPage: React.FC = () => {
   return (
     <IntegrationsLayout>
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Integrations</h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-4">Integrations</h1>
 
         {/* Tabs */}
         <div className="flex gap-2">
@@ -56,16 +57,16 @@ const IntegrationsPage: React.FC = () => {
       {activeTab === "demand" ? (
         <>
           {/* Sourcing Integration Section */}
-          <div className="mb-12">
-            <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-lg font-medium text-gray-900">
-              Sourcing integration
-            </h2>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-              Done
-            </span>
-          </div>
-            <p className="text-gray-600 text-sm mb-6">
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-2">
+              <h2 className="text-lg font-medium text-gray-900">
+                Sourcing integration
+              </h2>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                Done
+              </span>
+            </div>
+            <p className="text-gray-600 text-sm mb-4">
               Select tool which you want to start the integration with
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -83,15 +84,14 @@ const IntegrationsPage: React.FC = () => {
           </div>
 
           {/* Publishing Integration Section */}
-          <div className="mb-12">
-            <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-lg font-medium text-gray-900">Publishing integration</h2>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-              Done
-            </span>
-          </div>
-
-            <p className="text-gray-600 text-sm mb-6">
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-2">
+              <h2 className="text-lg font-medium text-gray-900">Publishing integration</h2>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                Done
+              </span>
+            </div>
+            <p className="text-gray-600 text-sm mb-4">
               Select tool which you want to start the integration with
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

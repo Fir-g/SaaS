@@ -32,7 +32,7 @@ export interface InstanceStatus {
   success: boolean;
   instance: {
     instanceId: string;
-    state: "qr" | "connected" | "disconnected";
+    state: "qr" | "close" | "connecting" | "open" | "connected" | "disconnected";
     qr?: string;
     phoneNumber: string | null;
     lastActivity: number;
@@ -60,5 +60,5 @@ export const getInstanceStatus = async (instanceId: string, token: string | null
 
 // Refresh QR code for existing instance
 export const refreshQrCode = async (instanceId: string, token: string | null): Promise<RefreshQrResponse> => {
-  return qrApi.post(`/api/instances/${instanceId}/qr`, {}, token, true);
+  return qrApi.get(`/api/instances/${instanceId}/qr`, {}, token, true);
 };

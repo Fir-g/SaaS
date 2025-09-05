@@ -9,7 +9,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -21,7 +20,6 @@ import {
 import {
   ChevronLeft,
   ChevronRight,
-  Search,
   Package,
   MapPin,
   Users,
@@ -50,7 +48,6 @@ const ODVLSPTable: React.FC<ODVLSPTableProps> = ({
   const { getToken } = useAuth();
   const [data, setData] = useState<ODVLSPResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
@@ -89,18 +86,10 @@ const ODVLSPTable: React.FC<ODVLSPTableProps> = ({
     }
   };
 
-  // Filter data based on search term
+  // Use all data rows (search removed)
   const filteredData = React.useMemo(() => {
-    if (!data?.rows || !searchTerm) return data?.rows || [];
-
-    return data.rows.filter(
-      (row) =>
-        row.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.destination.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.vehicle_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.lsp_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [data, searchTerm]);
+    return data?.rows || [];
+  }, [data]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -148,230 +137,204 @@ const ODVLSPTable: React.FC<ODVLSPTableProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="w-5 h-5 text-blue-600" />
-              ODV LSP Analysis
-            </CardTitle>
-            <CardDescription>
-              Origin, Destination, Vehicle & LSP breakdown
-            </CardDescription>
-          </div>
-
-          {data && (
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-1 text-blue-600">
-                <TrendingUp className="w-4 h-4" />
-                <span className="font-semibold">Total: {data.total}</span>
+            {statusParam && (
+              <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+                <Badge variant="outline">Status: {statusParam}</Badge>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Search Bar */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="Search origin, destination, vehicle, or LSP..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Reset to first page when searching
-              }}
-              className="pl-10"
-            />
+            )}
           </div>
-          {searchTerm && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSearchTerm("")}
-            >
-              Clear
-            </Button>
-          )}
         </div>
       </CardHeader>
 
       <CardContent>
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-2 text-gray-500">Loading data...</span>
+        {/* Results Summary and Total in one line */}
+        <div className="mb-4 text-sm text-gray-600 flex items-center justify-between">
+          <div>
+            Showing {filteredData.length === 0 ? 0 : startIndex + 1}-
+            {filteredData.length === 0
+              ? 0
+              : Math.min(startIndex + itemsPerPage, filteredData.length)} of {filteredData.length} results
           </div>
-        ) : !data || filteredData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Package className="w-8 h-8 text-gray-400" />
-            </div>
-            <p className="text-gray-500 font-medium">
-              {!data ? "No data available" : "No matching results found"}
-            </p>
-            <p className="text-sm text-gray-400 mt-1">
-              {!data
-                ? "Try adjusting your filters or date range"
-                : "Try adjusting your search terms"}
-            </p>
+          <div className="flex items-center gap-1 text-blue-600">
+            <TrendingUp className="w-4 h-4" />
+            <span className="font-semibold">Total: {data?.total ?? 0}</span>
           </div>
-        ) : (
-          <>
-            {/* Results Summary */}
-            <div className="mb-4 text-sm text-gray-600">
-              Showing {startIndex + 1}-
-              {Math.min(startIndex + itemsPerPage, filteredData.length)} of{" "}
-              {filteredData.length} results
-              {searchTerm && ` for "${searchTerm}"`}
-            </div>
+        </div>
 
-            {/* Table */}
-            <div className="border rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-green-600" />
-                        Origin
-                      </div>
-                    </TableHead>
-                    <TableHead className="font-semibold">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-red-600" />
-                        Destination
-                      </div>
-                    </TableHead>
-                    <TableHead className="font-semibold">
-                      <div className="flex items-center gap-2">
-                        <Truck className="w-4 h-4 text-blue-600" />
-                        Vehicle
-                      </div>
-                    </TableHead>
-                    <TableHead className="font-semibold">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-purple-600" />
-                        LSP Name
-                      </div>
-                    </TableHead>
-                    <TableHead className="font-semibold text-right">
-                      Count
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedData.map((row, index) => (
-                    <TableRow
-                      key={`${row.origin}-${row.destination}-${row.vehicle_name}-${row.lsp_name}-${index}`}
-                      className="hover:bg-gray-50"
-                    >
-                      <TableCell className="font-medium">
-                        {row.origin || (
-                          <span className="text-gray-400 italic">
-                            Not specified
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {row.destination || (
-                          <span className="text-gray-400 italic">
-                            Not specified
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div
-                          className="max-w-[200px] truncate"
-                          title={row.vehicle_name}
-                        >
-                          {row.vehicle_name || (
-                            <span className="text-gray-400 italic">
-                              Not specified
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div
-                          className="max-w-[150px] truncate"
-                          title={row.lsp_name}
-                        >
-                          {row.lsp_name || (
-                            <span className="text-gray-400 italic">
-                              Not specified
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge variant="secondary" className="font-semibold">
-                          {row.count}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-4">
-                <div className="text-sm text-gray-500">
-                  Page {currentPage} of {totalPages}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    Previous
-                  </Button>
-
-                  {/* Page numbers */}
-                  <div className="flex gap-1">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 5) {
-                        pageNum = i + 1;
-                      } else if (currentPage <= 3) {
-                        pageNum = i + 1;
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i;
-                      } else {
-                        pageNum = currentPage - 2 + i;
-                      }
-
-                      return (
-                        <Button
-                          key={pageNum}
-                          variant={
-                            currentPage === pageNum ? "default" : "outline"
-                          }
-                          size="sm"
-                          onClick={() => handlePageChange(pageNum)}
-                          className="w-8 h-8 p-0"
-                        >
-                          {pageNum}
-                        </Button>
-                      );
-                    })}
+        {/* Table always rendered so headers remain visible */}
+        <div className="border rounded-lg overflow-hidden">
+          <Table className="table-fixed">
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead className="font-semibold sticky top-0 z-10 bg-gray-50 w-1/5">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-green-600" />
+                    Origin
                   </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
+                </TableHead>
+                <TableHead className="font-semibold sticky top-0 z-10 bg-gray-50 w-1/5">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-red-600" />
+                    Destination
+                  </div>
+                </TableHead>
+                <TableHead className="font-semibold sticky top-0 z-10 bg-gray-50 w-1/5">
+                  <div className="flex items-center gap-2">
+                    <Truck className="w-4 h-4 text-blue-600" />
+                    Vehicle
+                  </div>
+                </TableHead>
+                <TableHead className="font-semibold sticky top-0 z-10 bg-gray-50 w-1/5">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-purple-600" />
+                    LSP Name
+                  </div>
+                </TableHead>
+                <TableHead className="font-semibold text-right sticky top-0 z-10 bg-gray-50 w-20">
+                  Count
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="p-8">
+                    <div className="flex items-center justify-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      <span className="ml-2 text-gray-500">Loading data...</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (!data || filteredData.length === 0) ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="p-8">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <Package className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <p className="text-gray-500 font-medium">
+                        {!data ? "No data available" : "No rows for selected filters"}
+                      </p>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Try adjusting your filters or date range
+                      </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginatedData.map((row, index) => (
+                  <TableRow
+                    key={`${row.origin}-${row.destination}-${row.vehicle_name}-${row.lsp_name}-${index}`}
+                    className="hover:bg-gray-50"
                   >
-                    Next
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </div>
+                    <TableCell className="font-medium w-1/5">
+                      {row.origin || (
+                        <span className="text-gray-400 italic">
+                          Not specified
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="w-1/5">
+                      {row.destination || (
+                        <span className="text-gray-400 italic">
+                          Not specified
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="w-1/5">
+                      <div
+                        className="whitespace-normal break-words"
+                        title={row.vehicle_name}
+                      >
+                        {row.vehicle_name || (
+                          <span className="text-gray-400 italic">
+                            Not specified
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="w-1/5">
+                      <div
+                        className="whitespace-normal break-words"
+                        title={row.lsp_name}
+                      >
+                        {row.lsp_name || (
+                          <span className="text-gray-400 italic">
+                            Not specified
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right w-20">
+                      <Badge variant="secondary" className="font-semibold">
+                        {row.count}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4">
+            <div className="text-sm text-gray-500">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </Button>
+
+              {/* Page numbers */}
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={
+                        currentPage === pageNum ? "default" : "outline"
+                      }
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="w-8 h-8 p-0"
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
               </div>
-            )}
-          </>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>

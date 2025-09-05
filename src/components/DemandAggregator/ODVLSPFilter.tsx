@@ -88,8 +88,8 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
     onFiltersChange(filters);
   }, [filters, onFiltersChange]);
 
-  const addFilter = (type: keyof ODVLSPFilters, value: string) => {
-    if (!value || filters[type].includes(value)) return;
+  const toggleFilter = (type: keyof ODVLSPFilters, value: string) => {
+    if (!value) return;
 
     // If "All" is selected, clear the array to send empty/null values
     if (value === 'ALL') {
@@ -98,18 +98,26 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
         [type]: []
       }));
     } else {
-      // Remove "All" if it exists and add the specific value
-      setFilters(prev => ({
-        ...prev,
-        [type]: [...prev[type].filter(item => item !== 'ALL'), value]
-      }));
+      setFilters(prev => {
+        const alreadySelected = prev[type].includes(value);
+        return {
+          ...prev,
+          [type]: alreadySelected
+            ? prev[type].filter(item => item !== value)
+            : [...prev[type].filter(item => item !== 'ALL'), value]
+        };
+      });
     }
 
-    // Clear temp selection
-    const tempKey = type.slice(0, -1) as keyof typeof tempSelections; // Remove 's' from the end
+    // Clear temp selection (acts as cache for current dropdown value)
+    const tempKeyName: 'origin' | 'destination' | 'lsp' | 'vehicle' =
+      type === 'origins' ? 'origin'
+      : type === 'destinations' ? 'destination'
+      : type === 'lsp_names' ? 'lsp'
+      : 'vehicle';
     setTempSelections(prev => ({
       ...prev,
-      [tempKey === 'lsp_names' ? 'lsp' : tempKey === 'vehicle_ids' ? 'vehicle' : tempKey]: ''
+      [tempKeyName]: ''
     }));
   };
 
@@ -141,11 +149,9 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg border shadow-sm space-y-4">
+    <div className=" bg-white p-4 rounded-lg border shadow-sm space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h3 className="text-lg font-semibold">ODV LSP Filters</h3>
           {getTotalFiltersCount() > 0 && (
             <Badge variant="secondary" className="ml-2">
               {getTotalFiltersCount()} active
@@ -167,15 +173,18 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
             value={tempSelections.origin}
             onValueChange={(value) => {
               setTempSelections(prev => ({ ...prev, origin: value }));
-              addFilter('origins', value);
+              toggleFilter('origins', value);
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select origin" />
+              {filters.origins.length === 0
+                ? <span className="text-muted-foreground">All Origins</span>
+                : <span className="truncate">{filters.origins.join(", ")}</span>
+              }
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All Origins</SelectItem>
-              {LOCATIONS.filter(loc => !filters.origins.includes(loc)).map(location => (
+              {LOCATIONS.map(location => (
                 <SelectItem key={location} value={location}>
                   {location}
                 </SelectItem>
@@ -212,15 +221,18 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
             value={tempSelections.destination}
             onValueChange={(value) => {
               setTempSelections(prev => ({ ...prev, destination: value }));
-              addFilter('destinations', value);
+              toggleFilter('destinations', value);
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select destination" />
+              {filters.destinations.length === 0
+                ? <span className="text-muted-foreground">All Destinations</span>
+                : <span className="truncate">{filters.destinations.join(", ")}</span>
+              }
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All Destinations</SelectItem>
-              {LOCATIONS.filter(loc => !filters.destinations.includes(loc)).map(location => (
+              {LOCATIONS.map(location => (
                 <SelectItem key={location} value={location}>
                   {location}
                 </SelectItem>
@@ -257,15 +269,18 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
             value={tempSelections.lsp}
             onValueChange={(value) => {
               setTempSelections(prev => ({ ...prev, lsp: value }));
-              addFilter('lsp_names', value);
+              toggleFilter('lsp_names', value);
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select customer" />
+              {filters.lsp_names.length === 0
+                ? <span className="text-muted-foreground">All Customers</span>
+                : <span className="truncate">{filters.lsp_names.join(", ")}</span>
+              }
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All Customers</SelectItem>
-              {availableLsps.filter(lsp => !filters.lsp_names.includes(lsp)).map(lsp => (
+              {availableLsps.map(lsp => (
                 <SelectItem key={lsp} value={lsp}>
                   {lsp}
                 </SelectItem>
@@ -302,22 +317,28 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
             value={tempSelections.vehicle}
             onValueChange={(value) => {
               setTempSelections(prev => ({ ...prev, vehicle: value }));
-              addFilter('vehicle_ids', value);
+              toggleFilter('vehicle_ids', value);
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select vehicle" />
+              {filters.vehicle_ids.length === 0
+                ? <span className="text-muted-foreground">All Vehicles</span>
+                : (
+                  <span className="truncate">
+                    {filters.vehicle_ids
+                      .map((vid) => availableVehicles.find(av => av.id === vid)?.name || vid)
+                      .join(", ")}
+                  </span>
+                )
+              }
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All Vehicles</SelectItem>
-              {availableVehicles
-                .filter(vehicle => !filters.vehicle_ids.includes(vehicle.id))
-                .map(vehicle => (
-                  <SelectItem key={vehicle.id} value={vehicle.id}>
-                    {vehicle.name}
-                  </SelectItem>
-                ))
-              }
+              {availableVehicles.map(vehicle => (
+                <SelectItem key={vehicle.id} value={vehicle.id}>
+                  {vehicle.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <div className="flex flex-wrap gap-1">

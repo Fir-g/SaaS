@@ -28,6 +28,7 @@ import SplitBarChart from "./split-bar-chart";
 import { TrendingUp, Package, Milestone } from "lucide-react";
 import ODVLSPFilter from "./ODVLSPFilter";
 import ODVLSPTable from "./ODVLSPTable";
+import Loader from "@/components/ui/loader";
 
 
 
@@ -67,6 +68,10 @@ const DemandAggregator = () => {
   const [selectedBucket, setSelectedBucket] = useState<string>("day");
   const [selectedStatusParam, setSelectedStatusParam] =
     useState<string>("PUBLISHED,COMPLETE");
+
+  const [isLoadingLatest, setIsLoadingLatest] = useState<boolean>(false);
+  const [analyticsLoadingCount, setAnalyticsLoadingCount] = useState<number>(0);
+  const isLoadingAnalytics = analyticsLoadingCount > 0;
 
   // Filter states for split sections
   const [originFilters, setOriginFilters] = useState({
@@ -132,6 +137,7 @@ const DemandAggregator = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoadingLatest(true);
         const token = await getClerkBearer();
         const [successRes, failedRes] = await Promise.all([
           getLatestPublishedDemands("FT", 10, token),
@@ -144,6 +150,8 @@ const DemandAggregator = () => {
         // Set empty arrays on error
         setLatestSuccess([]);
         setLatestFailed([]);
+      } finally {
+        setIsLoadingLatest(false);
       }
     };
     fetchData();
@@ -167,6 +175,7 @@ const DemandAggregator = () => {
 
   const fetchChannelSplitData = async () => {
     try {
+      setAnalyticsLoadingCount((c) => c + 1);
       const token = await getClerkBearer();
       const response = await getChannelSplitData(
         "FT",
@@ -180,11 +189,14 @@ const DemandAggregator = () => {
     } catch (error) {
       console.error("Error fetching channel split data:", error);
       setChannelSplitData(null);
+    } finally {
+      setAnalyticsLoadingCount((c) => Math.max(0, c - 1));
     }
   };
 
   const fetchTrendsData = async () => {
     try {
+      setAnalyticsLoadingCount((c) => c + 1);
       const token = await getClerkBearer();
       const response = await getTrendsData(
         "FT",
@@ -198,6 +210,8 @@ const DemandAggregator = () => {
     } catch (error) {
       console.error("Error fetching trends data:", error);
       setTrendsData(null);
+    } finally {
+      setAnalyticsLoadingCount((c) => Math.max(0, c - 1));
     }
   };
 
@@ -205,6 +219,7 @@ const DemandAggregator = () => {
     if (!selectedDateRange.from || !selectedDateRange.to) return;
 
     try {
+      setAnalyticsLoadingCount((c) => c + 1);
       const token = await getToken();
       const [originRes, destinationRes, vehicleRes, customerRes] =
         await Promise.all([
@@ -264,6 +279,8 @@ const DemandAggregator = () => {
       setDestinationData(null);
       setVehicleData(null);
       setCustomerData(null);
+    } finally {
+      setAnalyticsLoadingCount((c) => Math.max(0, c - 1));
     }
   };
 
@@ -336,7 +353,12 @@ const DemandAggregator = () => {
             className="flex flex-row gap-3 sm:gap-4 overflow-x-auto scrollbar-none pb-2"
             style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
           >
-            {latestSuccess.length > 0 ? (
+            {isLoadingLatest ? (
+              <div className="flex items-center justify-center py-8 text-gray-500 min-w-full">
+                <Loader />
+                <span className="ml-2">Loading...</span>
+              </div>
+            ) : latestSuccess.length > 0 ? (
               latestSuccess.map((d) => (
                 <DemandCard key={d.id} demand={d} variant="success" />
               ))
@@ -353,7 +375,12 @@ const DemandAggregator = () => {
               className="flex flex-row gap-3 sm:gap-4 overflow-x-auto scrollbar-none pb-2"
               style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
             >
-              {latestFailed.length > 0 ? (
+              {isLoadingLatest ? (
+                <div className="flex items-center justify-center py-8 text-gray-500 min-w-full">
+                  <Loader />
+                  <span className="ml-2">Loading...</span>
+                </div>
+              ) : latestFailed.length > 0 ? (
                 latestFailed.map((d) => (
                   <DemandCard key={d.id} demand={d} variant="failed" />
                 ))
@@ -384,7 +411,12 @@ const DemandAggregator = () => {
                   Channel wise aggregation split
                 </h3>
 
-                {getCurrentChannelData().length === 0 ? (
+                {isLoadingAnalytics ? (
+                  <div className="flex-1 flex items-center justify-center py-12 bg-white">
+                    <Loader />
+                    <span className="ml-2 text-gray-500">Loading analytics...</span>
+                  </div>
+                ) : getCurrentChannelData().length === 0 ? (
                   // -------- Empty State --------
                   <div className="flex-1 flex flex-col items-center justify-center py-12 bg-white">
                     <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -456,11 +488,18 @@ const DemandAggregator = () => {
               </div>
 
               {/* Trends Chart */}
-              <TrendChart
-                data={getCurrentTrendsData()}
-                onBucketChange={handleBucketChange}
-                selectedBucket={selectedBucket}
-              />
+              {isLoadingAnalytics ? (
+                <div className="flex items-center justify-center h-64 border rounded-lg bg-white">
+                  <Loader />
+                  <span className="ml-2 text-gray-500">Loading analytics...</span>
+                </div>
+              ) : (
+                <TrendChart
+                  data={getCurrentTrendsData()}
+                  onBucketChange={handleBucketChange}
+                  selectedBucket={selectedBucket}
+                />
+              )}
             </div>
 
             {/* Split Sections */}

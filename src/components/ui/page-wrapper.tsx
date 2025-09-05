@@ -10,10 +10,10 @@ const PageWrapper = ({
   children,
 }: PageWrapperPropsType) => {
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <div className="text-gray-800 text-3xl font-semibold">{header}</div>
-        <p className="text-gray-500 text-muted-foreground text-md">
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <div className="text-gray-800 text-2xl sm:text-2xl lg:text-3xl font-semibold">{header}</div>
+        <p className="text-gray-500 text-muted-foreground text-sm sm:text-base">
           {description}
         </p>
       </div>

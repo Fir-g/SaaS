@@ -39,15 +39,23 @@ const NextButton = ({
 
   return (
     <div className="flex mt-auto justify-end border-t-2 pt-6">
-      <Link to={nextPageUrl}>
+      {disabled || isButtonLoading ? (
         <Button
-          className="px-12 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={disabled || isButtonLoading}
-          onClick={onClick}
+          className="px-12 bg-gray-400 hover:bg-gray-400 cursor-not-allowed"
+          disabled={true}
         >
           {isButtonLoading ? <Loader /> : text}
         </Button>
-      </Link>
+      ) : (
+        <Link to={nextPageUrl}>
+          <Button
+            className="px-12 bg-gray-700 hover:bg-gray-600"
+            onClick={onClick}
+          >
+            {isButtonLoading ? <Loader /> : text}
+          </Button>
+        </Link>
+      )}
     </div>
   );
 };

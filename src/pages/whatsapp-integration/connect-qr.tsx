@@ -5,7 +5,9 @@ const ConnectQR = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-background">
       <LeftSectionWhatsapp currentStep={"Connect to WhatsApp"}  stepNo={1}/>
-      <ScanQR />
+      <div className="flex-1 lg:w-3/4">
+        <ScanQR />
+      </div>
     </div>
   );
 };

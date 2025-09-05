@@ -65,7 +65,7 @@ export const postBlacklistedNumbers = async (
   try {
     return blacklistApi.post("/blacklist", {
       tenant_id: tenantId,
-      group_id: "group-1", // Default group ID as per your requirements
+      // group_id: "group-1", // Default group ID as per your requirements
       phone_numbers: phoneNumbers,
     }, token, true);
   } catch (error) {

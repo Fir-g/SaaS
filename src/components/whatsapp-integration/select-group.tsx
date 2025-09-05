@@ -89,13 +89,19 @@ const SelectGroup = () => {
         setError("");
         const token = await getClerkBearer();
         
-        const [whitelistedGroups, waGroups] = await Promise.all([
-          getWhitelistedGroups('FT', token),
-          getWhatsAppGroups(phoneNumber, token),
-        ]);
+        // Commented out whitelisted-entries API call
+        // const [whitelistedGroups, waGroups] = await Promise.all([
+        //   getWhitelistedGroups('FT', token),
+        //   getWhatsAppGroups(phoneNumber, token),
+        // ]);
         
-        setFetchedGroups(whitelistedGroups || []);
-        setWhitelistedGroups(whitelistedGroups || []);
+        // Only fetch WhatsApp groups (chat API)
+        const waGroups = await getWhatsAppGroups(phoneNumber, token);
+        
+        // setFetchedGroups(whitelistedGroups || []);
+        // setWhitelistedGroups(whitelistedGroups || []);
+        setFetchedGroups([]); // Initialize as empty since we're not fetching whitelisted groups
+        setWhitelistedGroups([]); // Initialize as empty since we're not fetching whitelisted groups
         setWhatsAppGroups(waGroups || []);
       } catch (error) {
         console.error("Error fetching groups:", error);
@@ -181,7 +187,7 @@ const SelectGroup = () => {
   }
 
   return (
-    <div className="flex flex-col w-full py-4 px-4 md:px-12 pt-20">
+    <div className="flex flex-col w-full py-4 px-4 md:px-8 lg:px-12 pt-16">
       <PageWrapper
         header="Configure conversations to read"
         description="We value your privacy and data and understand that it might be
@@ -190,11 +196,11 @@ const SelectGroup = () => {
             us to skip reading in our analysis."
       >
         {activeInstances.length > 0 && (
-          <div className="mb-3 space-y-3">
+          <div className="mb-4 space-y-2">
             <h3 className="text-lg font-medium text-gray-900">
               Select WhatsApp Integration
             </h3>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {activeInstances.map((instance) => (
                 <button
                   key={instance.id}
@@ -241,7 +247,7 @@ const SelectGroup = () => {
           </div>
         )}
 
-        <div className="shadow-lg sm:rounded-lg mt-6 min-h-80 overflow-auto">
+        <div className="shadow-lg sm:rounded-lg mt-4 min-h-64 overflow-auto">
           <GrouplistTable
             combinedGroup={combinedGroup}
             whitelistedGroups={whitelistedGroups}
@@ -252,7 +258,7 @@ const SelectGroup = () => {
         </div>
       </PageWrapper>
       
-      <div className="mt-auto pt-8">
+      <div className="mt-auto pt-6">
         <NextButton
           handleClick={handleNextClick}
           nextPageUrl="/whatsapp/success"

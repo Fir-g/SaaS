@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, RefreshCw, TrendingDown, Target, BarChart3 } from 'lucide-react';
 import SunburstChart from './SunburstChart';
 import { getRootCauseAnalysis, RootCauseData } from '@/services/rootCauseService';
 
@@ -12,6 +12,7 @@ interface RootCauseAnalysisProps {
   showSummaryStats?: boolean;
   showDetailedBreakdown?: boolean;
   chartHeight?: string;
+  className?: string;
 }
 
 const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
@@ -20,9 +21,11 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
   description = 'Analyze failure patterns and identify root causes for unpublished demands',
   showSummaryStats = true,
   showDetailedBreakdown = true,
-  chartHeight = 'h-96'
+  chartHeight = 'h-80 sm:h-86',
+  className = '',
 }) => {
   const { getToken } = useAuth();
+  
   const getClerkBearer = useCallback(async () => {
     const template = import.meta.env.VITE_CLERK_TOKEN_TEMPLATE as string | undefined;
     return getToken({ template, skipCache: true });
@@ -35,6 +38,7 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
   const fetchRCAData = useCallback(async () => {
     setLoading(true);
     setError(null);
+    
     try {
       const token = await getClerkBearer();
       const response = await getRootCauseAnalysis(entityType, token);
@@ -52,74 +56,246 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
     fetchRCAData();
   }, [fetchRCAData]);
 
+  // Memoize calculations for better performance
+  const summaryStats = useMemo(() => {
+    const totalFailures = rcaData.reduce((sum, item) => sum + (item.percent || 0), 0);
+    const totalSubCategories = rcaData.reduce((sum, item) => sum + (item.children?.length || 0), 0);
+    const rootCausesCount = rcaData.length;
+
+    return {
+      totalFailures,
+      totalSubCategories,
+      rootCausesCount,
+    };
+  }, [rcaData]);
+
+  // Loading component
   const LoadingState = () => (
-    <div className="flex flex-col items-center justify-center py-12 lg:py-16">
-      <div className="animate-spin rounded-full h-10 w-10 lg:h-12 lg:w-12 border-4 border-gray-200 border-t-blue-600 mb-4"></div>
-      <span className="text-gray-600 font-medium text-sm lg:text-base">Loading root cause analysis...</span>
+    <div className="flex flex-col items-center justify-center py-6 px-4">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-3"></div>
+      <span className="text-sm text-muted-foreground text-center">
+        Loading root cause analysis...
+      </span>
     </div>
   );
 
+  // Error component
   const ErrorState = () => (
-    <div className="text-center py-12 lg:py-16 px-4 lg:px-6 max-w-md mx-auto">
-      <div className="mx-auto flex items-center justify-center h-12 w-12 lg:h-16 lg:w-16 rounded-full bg-red-100 mb-4 lg:mb-6">
-        <AlertTriangle className="h-6 w-6 lg:h-8 lg:w-8 text-red-600" />
-      </div>
-      <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2">Unable to Load Data</h3>
-      <p className="text-gray-600 mb-4 lg:mb-6 leading-relaxed text-sm lg:text-base">{error}</p>
+    <div className="flex flex-col items-center justify-center py-6 px-4">
+      <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-red-500 mb-4" />
+      <h3 className="text-base sm:text-lg font-medium text-red-700 mb-2 text-center">
+        Error Loading Data
+      </h3>
+      <p className="text-xs sm:text-sm text-red-600 text-center max-w-md mb-4 leading-relaxed">
+        {error}
+      </p>
       <button
         onClick={fetchRCAData}
-        className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium text-sm lg:text-base"
+        className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
       >
-        <RefreshCw className="w-4 h-4 mr-2" />
         Try Again
       </button>
     </div>
   );
 
+  // No issues component
   const NoIssuesState = () => (
-    <div className="text-center py-12 lg:py-16 px-4 lg:px-6 max-w-md mx-auto">
-      <div className="mx-auto flex items-center justify-center h-12 w-12 lg:h-16 lg:w-16 rounded-full bg-green-100 mb-4 lg:mb-6">
-        <AlertTriangle className="w-6 h-6 lg:w-8 lg:h-8 text-green-600" />
+    <div className="flex flex-col items-center justify-center py-6 px-4">
+      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+        <Target className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
       </div>
-      <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2">All demand are published </h3>
-      <p className="text-gray-600 leading-relaxed text-sm lg:text-base">
+      <h3 className="text-base sm:text-lg font-medium text-green-700 mb-2 text-center">
+        No Issues Found
+      </h3>
+      <p className="text-xs sm:text-sm text-green-600 text-center max-w-md leading-relaxed">
         Great! No failure patterns detected at this time.
       </p>
     </div>
   );
 
+  // Summary stats component
+  const SummaryStats = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+      <Card className="bg-red-50 border-red-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-red-700">
+                {summaryStats.rootCausesCount}
+              </div>
+              <div className="text-xs sm:text-sm text-red-600">
+                Root Causes Identified
+              </div>
+            </div>
+            <TrendingDown className="h-6 w-6 text-red-500 opacity-70" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-orange-50 border-orange-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-orange-700">
+                {summaryStats.totalFailures.toFixed(1)}%
+              </div>
+              <div className="text-xs sm:text-sm text-orange-600">
+                Total Failure Rate
+              </div>
+            </div>
+            <AlertTriangle className="h-6 w-6 text-orange-500 opacity-70" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-blue-50 border-blue-200 sm:col-span-2 lg:col-span-1">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-blue-700">
+                {summaryStats.totalSubCategories}
+              </div>
+              <div className="text-xs sm:text-sm text-blue-600">
+                Sub-categories
+              </div>
+            </div>
+            <BarChart3 className="h-6 w-6 text-blue-500 opacity-70" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  // Detailed breakdown component
+  const DetailedBreakdown = () => (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 mb-4">
+        <BarChart3 className="h-5 w-5 text-gray-600" />
+        <h4 className="text-base sm:text-lg font-semibold">Detailed Breakdown</h4>
+      </div>
+      
+      <div className="space-y-3 sm:space-y-4">
+        {rcaData.map((item, index) => (
+          <Card key={item.key || index} className="border-l-4 border-l-red-500 shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <CardTitle className="text-sm sm:text-base lg:text-lg leading-tight">
+                  {item.title}
+                </CardTitle>
+                <div className="self-start sm:self-center text-right">
+                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600">
+                    {item.percent?.toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            
+            {item.children && item.children.length > 0 && (
+              <CardContent className="pt-0">
+                <div className="space-y-2">
+                  <h5 className="font-medium text-xs sm:text-sm text-gray-700 mb-3">
+                    Sub-categories ({item.children.length}):
+                  </h5>
+                  <div className="space-y-2">
+                    {item.children.map((child, childIndex) => (
+                      <div
+                        key={child.key || childIndex}
+                        className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <span className="text-xs sm:text-sm font-medium text-gray-800 leading-tight">
+                          {child.title}
+                        </span>
+                        <span className="text-xs sm:text-sm text-gray-600 font-medium ml-2 flex-shrink-0">
+                          {child.percent?.toFixed(1)}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
+  const hasData = rcaData.length > 0;
+  const hasFailures = summaryStats.totalFailures > 0;
+
   return (
-    <div className="w-full mx-auto space-y-6 lg:space-y-8 p-4 lg:p-0">
+    <div className={`w-full space-y-3 sm:space-y-4 ${className}`}>
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 truncate">{title}</h2>
-          <p className="text-gray-600 text-base lg:text-lg leading-relaxed">{description}</p>
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 leading-tight">
+              {title}
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              {description}
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-shrink-0">
+            <button
+              onClick={fetchRCAData}
+              disabled={loading}
+              className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto justify-center"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+          </div>
         </div>
-        <button
-          onClick={fetchRCAData}
-          disabled={loading}
-          className="inline-flex items-center gap-2 px-3 py-2 lg:px-4 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex-shrink-0"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          <span className="hidden sm:inline">Refresh</span>
-        </button>
       </div>
 
-      {/* Main Content Card */}
-      <Card className="shadow-lg border-0 bg-white overflow-hidden">
+      {/* Main Content Card with optional full-width breakout */}
+      <div>
+      <Card className="shadow-sm">
+        <CardHeader className="py-2">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            Failure Analysis
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent className="space-y-4 pt-4 pb-4">
           {loading ? (
             <LoadingState />
           ) : error ? (
             <ErrorState />
-          ) : rcaData.length === 0 ? (
+          ) : !hasData ? (
             <NoIssuesState />
           ) : (
-                <div className={`w-full ${chartHeight} min-h-[300px] lg:min-h-[500px]`}>
-                  <SunburstChart data={rcaData} />
-                </div>          
+            <div className="space-y-4">
+              {/* Summary Stats */}
+              {/* {showSummaryStats && <SummaryStats />} */}
+
+              {/* Chart Section */}
+              <div className="bg-white border rounded-lg sm:p-4">
+                {/* <div className="flex items-center gap-2 mb-4">
+                  <BarChart3 className="h-5 w-5 text-gray-600" />
+                  <h4 className="text-base sm:text-lg font-semibold">
+                    Failure Pattern Visualization
+                  </h4>
+                </div> */}
+                
+                {/* Chart Container with proper responsive sizing */}
+                <div className="w-full h-full overflow-hidden">
+                  <div className={`w-full ${chartHeight} min-h-[620px]`}>
+                    <SunburstChart data={rcaData} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Detailed Breakdown */}
+              {showDetailedBreakdown && <DetailedBreakdown />}
+            </div>
           )}
+        </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

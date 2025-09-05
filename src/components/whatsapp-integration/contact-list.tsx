@@ -61,13 +61,10 @@ const ContactList = ({ contacts, handleRemoveNumber }: ContactListPropType) => {
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="sticky top-0 text-xs text-gray-700 uppercase bg-gray-50 border-b">
             <tr>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-4 py-3 w-1/2">
                 Phone Number
               </th>
-              <th scope="col" className="px-6 py-3 text-right">
+              <th scope="col" className="px-4 py-3 text-right w-1/2">
                 Action
               </th>
             </tr>
@@ -78,16 +75,10 @@ const ContactList = ({ contacts, handleRemoveNumber }: ContactListPropType) => {
                 key={index}
                 className="bg-white border-b hover:bg-gray-50 transition-colors"
               >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                >
-                  -
-                </th>
-                <td className="px-6 py-4 font-semibold text-gray-800">
+                <td className="px-4 py-3 font-semibold text-gray-800">
                   {formatPhoneNumber(number)}
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-4 py-3 text-right">
                   <Button
                     onClick={() => handleRemoveNumber(number)}
                     className="text-gray-400 hover:text-red-500 p-2"

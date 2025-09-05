@@ -3,7 +3,7 @@ import LeftSectionCRM from "@/components/crm-integration/left-section-crm";
 
 const CRMLoginPage = () => {
   return (
-    <div className="flex flex-row min-h-screen min-w-screen bg-background">
+    <div className="flex flex-row min-h-screen min-w-0 bg-background">
       <LeftSectionCRM stepNo={1} currentStep={"Connect CRM"} />
       <CrmLogin />
     </div>

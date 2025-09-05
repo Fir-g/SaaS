@@ -5,7 +5,9 @@ const SelectGrouptoRead = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-background">
       <LeftSectionWhatsapp currentStep={"Configure conversations"} stepNo={3} />
-      <SelectGroup />
+      <div className="flex-1 lg:w-3/4">
+        <SelectGroup />
+      </div>
     </div>
   );
 };

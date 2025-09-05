@@ -29,29 +29,32 @@ const ODVLSPAnalysis: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">ODV LSP Analysis</h2>
-        <p className="text-muted-foreground">
-          Detailed analysis of Origin, Destination, Vehicle and LSP data
-        </p>
+    <div className="w-full space-y-2 lg:space-y-2">
+
+        <h3 className="text-lg lg:text-xl font-semibold text-foreground mb-1">ODV LSP Analysis</h3>
+      
+      {/* Date and Status Filters */}
+      <div className="w-full">
+        <DemandAggregatorFilters
+          onDateRangeChange={handleDateRangeChange}
+          onStatusChange={handleStatusChange}
+        />
       </div>
 
-      {/* Date and Status Filters */}
-      <DemandAggregatorFilters
-        onDateRangeChange={handleDateRangeChange}
-        onStatusChange={handleStatusChange}
-      />
-
       {/* ODV LSP Specific Filters */}
-      <ODVLSPFilter onFiltersChange={handleODVLSPFiltersChange} />
+      <div className="w-full ">
+        <ODVLSPFilter onFiltersChange={handleODVLSPFiltersChange} />
+      </div>
 
-      {/* ODV LSP Table */}
-      <ODVLSPTable
-        dateRange={selectedDateRange}
-        statusParam={selectedStatusParam}
-        filters={odvlspFilters}
-      />
+      {/* ODV LSP Table (breakout to full-bleed) */}      
+
+          <div className="w-full">
+            <ODVLSPTable
+              dateRange={selectedDateRange}
+              statusParam={selectedStatusParam}
+              filters={odvlspFilters}
+            />
+          </div>
     </div>
   );
 };

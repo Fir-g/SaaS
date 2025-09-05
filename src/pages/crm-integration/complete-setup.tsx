@@ -3,7 +3,7 @@ import CRMSetupComplete from "@/components/crm-integration/setup-complete";
 
 const CRMSetupCompletePage = () => {
   return (
-    <div className="flex flex-row min-h-screen min-w-screen bg-background">
+    <div className="flex flex-row min-h-screen min-w-0 bg-background">
       <LeftSectionCRM currentStep={"Complete setup"} stepNo={3} />
       <CRMSetupComplete />
     </div>

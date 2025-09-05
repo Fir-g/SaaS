@@ -139,7 +139,7 @@ const SelectTeamMembers = () => {
   }, [getClerkBearer]);
 
   return (
-    <div className="flex flex-col w-full h-full py-6 px-4 md:px-12 pt-20">
+    <div className="flex flex-col w-full h-full py-4 px-4 md:px-8 lg:px-12 pt-16">
       <PageWrapper
         header="Configure team members"
         description="We value your privacy and data and understand that it might be
@@ -147,7 +147,7 @@ const SelectTeamMembers = () => {
             you full freedom to select & mark which numbers or groups you want
             us to skip reading in our analysis."
       >
-        <div className="space-y-6">
+        <div className="space-y-4">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
               <p className="text-red-700 text-sm">{error}</p>
@@ -157,9 +157,9 @@ const SelectTeamMembers = () => {
           <div>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col md:flex-row gap-4"
+              className="flex flex-col sm:flex-row gap-2"
             >
-              <div className="w-full md:w-1/5">
+              <div className="w-full sm:w-24">
                 <label
                   htmlFor="countrycode"
                   className="block text-sm font-medium mb-1"
@@ -169,15 +169,15 @@ const SelectTeamMembers = () => {
                 <select
                   defaultValue={"+91"}
                   {...register("countryCode")}
-                  className="border px-3 py-2 rounded w-full cursor-pointer"
+                  className="border px-2 py-2 rounded w-full cursor-pointer text-sm"
                   required
                   id="countrycode"
                 >
-                  <option value="+91">+91 (India)</option>
+                  <option value="+91">+91</option>
                 </select>
               </div>
               
-              <div className="w-full md:flex-1">
+              <div className="w-full sm:flex-1">
                 <label
                   htmlFor="phonenumber"
                   className="block text-sm font-medium mb-1"
@@ -185,7 +185,7 @@ const SelectTeamMembers = () => {
                   Phone Number
                 </label>
                 <textarea
-                  className="w-full border px-3 py-2 rounded resize-none max-h-[40px]"
+                  className="w-full border px-3 py-2 rounded resize-none max-h-[40px] text-sm"
                   onChange={handleAutoFormat}
                   ref={(e) => {
                     register("phoneNumber").ref(e);
@@ -197,12 +197,12 @@ const SelectTeamMembers = () => {
                 />
               </div>
               
-              <div className="w-full md:w-auto">
+              <div className="w-full sm:w-32">
                 <p className="text-transparent cursor-default mb-1">Add Contact</p>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full md:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 h-[40px] disabled:opacity-50"
+                  className="w-full bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 h-[40px] disabled:opacity-50 text-sm font-medium"
                 >
                   {loading ? "Adding..." : "Add Contact"}
                 </button>
@@ -241,18 +241,18 @@ const SelectTeamMembers = () => {
                 </p>
               </div>
             ) : (
-              <div className="h-60 overflow-y-auto rounded-lg border">
+              <div className="h-80 overflow-y-auto rounded-lg border">
                 <ContactList
-                  contacts={combinedContacts.slice(0, 5)} // Show only first 5
+                  contacts={combinedContacts.slice(0, 8)} // Show first 8 contacts
                   handleRemoveNumber={handleRemoveNumber}
                 />
-                {combinedContacts.length > 5 && (
+                {combinedContacts.length > 8 && (
                   <div className="p-3 bg-gray-50 border-t text-center">
                     <button
                       onClick={handleViewInModal}
                       className="text-blue-600 hover:text-blue-800 text-sm"
                     >
-                      View {combinedContacts.length - 5} more contacts...
+                      View {combinedContacts.length - 8} more contacts...
                     </button>
                   </div>
                 )}
@@ -273,7 +273,7 @@ const SelectTeamMembers = () => {
         </MembersModal>
       )}
 
-      <div className="mt-auto pt-8">
+      <div className="mt-auto pt-6">
         <NextButton
           handleClick={handleNextClick}
           nextPageUrl="/whatsapp/group"

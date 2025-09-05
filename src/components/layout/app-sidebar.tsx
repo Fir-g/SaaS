@@ -1,17 +1,16 @@
-import { useState } from "react"
-import { 
-  LayoutDashboard, 
-  Users, 
-  Settings, 
-  Truck, 
+import {
+  LayoutDashboard,
+  Users,
+  Settings,
+  Truck,
   BarChart3,
   Package,
   MapPin,
   Workflow,
-  FileText
-} from "lucide-react"
-import { NavLink, useLocation } from "react-router-dom"
-import { useAuth, useOrganization } from "@clerk/clerk-react"
+  FileText,
+} from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import { useAuth, useOrganization } from "@clerk/clerk-react";
 
 import {
   Sidebar,
@@ -23,79 +22,170 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-
   useSidebar,
-} from "@/components/ui/sidebar"
-import { OrganizationSwitcher } from "@/components/ui/organization-switcher"
+} from "@/components/ui/sidebar";
 
-type NavItem = { title: string; url: string; icon: any; subtitle?: string }
+type NavItem = {
+  title: string;
+  url: string;
+  icon: any;
+  subtitle?: string;
+};
 
-const navigationItems: NavItem[] = [
+// Generate Demand Aggregator item based on the active tab
+function getDemandAggregatorItemByTab(
+  activeTab: "hub" | "odvlsp" | "rca" | "spreadsheet"
+): NavItem {
+  const subtitles: Record<string, string> = {
+    hub: "Hub",
+    odvlsp: "ODV LSP",
+    rca: "RCA",
+    spreadsheet: "Spreadsheet",
+  };
+
+  return {
+    title: "Demand Aggregator",
+    url: `/demand-aggregator/${activeTab}`,
+    icon: Truck,
+    subtitle: subtitles[activeTab],
+  };
+}
+
+// Generate Integrations item subtitle based on the current route
+function getIntegrationsItemByRoute(currentPath: string): NavItem {
+  let subtitle: string | undefined = undefined;
+  if (
+    currentPath === "/integrations/whatsapp-integration" ||
+    currentPath.startsWith("/integrations/whatsapp")
+  ) {
+    subtitle = "WhatsApp";
+  } else if (currentPath === "/integrations/google-sheets-integration") {
+    subtitle = "Google Sheets";
+  } else if (
+    currentPath.startsWith("/integrations/crm") ||
+    currentPath === "/integrations/upload-data" ||
+    currentPath === "/integrations/crm-success"
+  ) {
+    subtitle = "CRM";
+  }
+
+  return {
+    title: "Integrations",
+    url: "/integrations",
+    icon: Workflow,
+    subtitle,
+  };
+}
+
+// Static navs
+const staticNavigationItems: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Shipments", url: "/shipments", icon: Package },
   { title: "Tracking", url: "/tracking", icon: MapPin },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Documents", url: "/documents", icon: FileText },
-  { title: "Demand Aggregator", url: "/demand-aggregator", icon: Truck },
-  {title:"Integrations", url:"/integrations", icon:Workflow }
-]
+  { title: "Demand Aggregator", url: "/demand-aggregator/hub", icon: Truck },
+  { title: "Integrations", url: "/integrations", icon: Workflow },
+];
 
 const fulfilmentItems: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Supply Sourcing", subtitle: "Inventory", url: "/inventory", icon: Package },
-  { title: "Demand Aggregator", url: "/demand-aggregator", icon: Truck },
-  {title:"Integrations", url:"/integrations", icon:Workflow },
-]
+  {
+    title: "Supply Sourcing",
+    subtitle: "Inventory",
+    url: "/inventory",
+    icon: Package,
+  },
+  { title: "Integrations", url: "/integrations", icon: Workflow },
+];
 
 const onboardingItems: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-]
+];
 
 const adminItems: NavItem[] = [
   { title: "Team", url: "/team", icon: Users },
   { title: "Settings", url: "/settings", icon: Settings },
-]
+];
 
 export function AppSidebar() {
-  const { state, open } = useSidebar()
-  const location = useLocation()
-  const { has } = useAuth()
-  const { organization } = useOrganization()
-  const currentPath = location.pathname
+  const { open } = useSidebar();
+  const location = useLocation();
+  const { has } = useAuth();
+  const { organization } = useOrganization();
+  const currentPath = location.pathname;
 
-  const isActive = (path: string) => currentPath.startsWith(path)
+  const isAdmin = has && has({ role: "org:admin" });
+  const collapsed = !open;
 
-  const isAdmin = has && has({ role: "org:admin" })
-  const collapsed = !open
-  
-  // Check team type and company type from organization metadata
-  const teamType = organization?.publicMetadata?.teamType as string
-  const companyType = organization?.publicMetadata?.companyType as string
-  
-  
-  // Check for both spellings since user mentioned "FULLFILMENT"
-  const isFulfilmentTeam = teamType === "FULFILMENT" || teamType === "FULFILMENT"
-  const isOnboardingTeam = teamType === "ONBOARDING"
-  console.log("Is fulfilment team:", isFulfilmentTeam)
-  console.log("Is onboarding team:", isOnboardingTeam)
-  
-  // Choose navigation items based on team type
-  let mainNavItems = navigationItems
+  const teamType = organization?.publicMetadata?.teamType as string;
+  const isFulfilmentTeam = teamType === "FULFILMENT" || teamType === "FULFILLMENT";
+  const isOnboardingTeam = teamType === "ONBOARDING";
+
+  const rawVariant = organization?.publicMetadata?.demandAggregatorVariant as string;
+  const defaultVariant = ["hub", "odvlsp", "rca", "spreadsheet"].includes(rawVariant)
+    ? (rawVariant as "hub" | "odvlsp" | "rca" | "spreadsheet")
+    : "hub";
+
+  // Determine active tab from URL; fallback to org default
+  const activeAggregatorTab: "hub" | "odvlsp" | "rca" | "spreadsheet" =
+    currentPath.startsWith("/demand-aggregator/rca")
+      ? "rca"
+      : currentPath.startsWith("/demand-aggregator/odvlsp")
+      ? "odvlsp"
+      : currentPath.startsWith("/demand-aggregator/hub")
+      ? "hub"
+      : currentPath.startsWith("/demand-aggregator/spreadsheet")
+      ? "spreadsheet"
+      : defaultVariant;
+
+  const demandAggregatorItem = getDemandAggregatorItemByTab(activeAggregatorTab);
+  const integrationsItem = getIntegrationsItemByRoute(currentPath);
+
+  let mainNavItems: NavItem[] = [];
+
   if (isFulfilmentTeam) {
-    mainNavItems = fulfilmentItems
+    mainNavItems = [
+      fulfilmentItems[0],
+      fulfilmentItems[1],
+      demandAggregatorItem,
+      integrationsItem,
+    ];
   } else if (isOnboardingTeam) {
-    mainNavItems = onboardingItems
+    mainNavItems = onboardingItems;
+  } else {
+    mainNavItems = staticNavigationItems.map((item) =>
+      item.title === "Demand Aggregator"
+        ? demandAggregatorItem
+        : item.title === "Integrations"
+        ? integrationsItem
+        : item
+    );
   }
-  console.log("Using navigation items:", mainNavItems.map(item => item.title))
+
+  // Active if exact or within nested routes (overridden below for Integrations)
 
   const getNavCls = (path: string) => {
-    const active = isActive(path)
+    const active = isActive(path);
     return cn(
       "transition-smooth hover:bg-accent/50 rounded-md",
-      active 
-        ? "bg-primary text-primary-foreground shadow-md ring-1 ring-primary/20" 
+      active
+        ? "bg-primary text-primary-foreground shadow-md ring-1 ring-primary/20"
         : "text-muted-foreground hover:text-foreground"
-    )
+    );
+  };
+
+  // Treat any /integrations or nested path as part of Integrations for active state
+  const isIntegrationsRoute =
+    currentPath === "/integrations" ||
+    currentPath.startsWith("/integrations/");
+
+  // Active if exact or within nested routes, with special-case for Integrations
+  function isActive(path: string) {
+    if (path === "/integrations") {
+      return isIntegrationsRoute;
+    }
+    return currentPath === path || currentPath.startsWith(path + "/");
   }
 
   return (
@@ -109,7 +199,6 @@ export function AppSidebar() {
       <SidebarHeader className="p-3 border-b" />
 
       <SidebarContent className={cn(collapsed ? "px-0 py-8" : "px-2 py-8")}>
-        
         {/* Main Navigation */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs text-muted-foreground">
@@ -118,30 +207,37 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNavItems.map((item) => {
-                const active = isActive(item.url)
+                const active = isActive(item.url);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <NavLink to={item.url} end={item.url === "/"} className={getNavCls(item.url)}>
-                        <item.icon className="h-4 w-6 " />
-                        {!collapsed && (
-                          item.subtitle ? (
+                      <NavLink
+                        to={item.url}
+                        className={getNavCls(item.url)}
+                      >
+                        <item.icon className="h-4 w-6" />
+                        {!collapsed &&
+                          (item.subtitle ? (
                             <span className="relative inline-block align-baseline">
-                              <span className={cn("pr-3 pb-0.5", active ? "font-semibold text-primary-foreground" : "font-medium")}>{item.title}</span>
-                              (<span
-                                
+                              <span
+                                className={cn(
+                                  "pr-3 pb-0.5",
+                                  active
+                                    ? "font-semibold text-primary-foreground"
+                                    : "font-medium"
+                                )}
                               >
-                                {item.subtitle}
-                              </span>)
+                                {item.title}
+                              </span>
+                              (<span>{item.subtitle}</span>)
                             </span>
                           ) : (
                             <span>{item.title}</span>
-                          )
-                        )}
+                          ))}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
+                );
               })}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -171,9 +267,9 @@ export function AppSidebar() {
         )}
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
 
 function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }

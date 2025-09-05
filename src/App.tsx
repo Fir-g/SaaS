@@ -50,28 +50,127 @@ const App = () => (
               <Route path="/demands" element={<Demands />} />
               <Route path="/customer-supply" element={<CustomerSupply />} />
               <Route path="/onboarding/new" element={<NewOnboarding />} />
-              <Route path="/shipments" element={<div className="p-8 text-center text-muted-foreground">Shipments page coming soon...</div>} />
-              <Route path="/tracking" element={<div className="p-8 text-center text-muted-foreground">Tracking page coming soon...</div>} />
-              <Route path="/analytics" element={<div className="p-8 text-center text-muted-foreground">Analytics page coming soon...</div>} />
-              <Route path="/documents" element={<div className="p-8 text-center text-muted-foreground">Documents page coming soon...</div>} />
-              
-              {/* Fixed: Removed duplicate route */}
-              <Route path="/demand-aggregator" element={<DemandAggregator />} />
-              <Route path="/demand-aggregator/spreadsheet" element={<SpreadsheetPage />} />
+              <Route
+                path="/shipments"
+                element={
+                  <div className="p-8 text-center text-muted-foreground">
+                    Shipments page coming soon...
+                  </div>
+                }
+              />
+              <Route
+                path="/tracking"
+                element={
+                  <div className="p-8 text-center text-muted-foreground">
+                    Tracking page coming soon...
+                  </div>
+                }
+              />
+              <Route
+                path="/analytics"
+                element={
+                  <div className="p-8 text-center text-muted-foreground">
+                    Analytics page coming soon...
+                  </div>
+                }
+              />
+              <Route
+                path="/documents"
+                element={
+                  <div className="p-8 text-center text-muted-foreground">
+                    Documents page coming soon...
+                  </div>
+                }
+              />
+
+              {/* Demand Aggregator: accept sub-routes so page can control per-tab URLs */}
+              <Route
+                path="/demand-aggregator/*"
+                element={<DemandAggregator />}
+              />
+              <Route
+                path="/demand-aggregator/spreadsheet"
+                element={<SpreadsheetPage />}
+              />
 
               <Route path="/integrations" element={<IntegrationsPage />} />
-              <Route path="/gmail-integration" element={<GmailIntegrationPage />} />
-              <Route path="/whatsapp-integration" element={<WhatsappIntegrationLanding />} />
-              <Route path="/whatsapp" element={<ConnectQR />} />
-              <Route path="/whatsapp/team-members" element={<SelectTeamMembersPage />} />
-              <Route path="/whatsapp/group" element={<SelectGrouptoRead />} />
-              <Route path="/google-sheets-integration" element={<GoogleSheetsIntegrationPage />} />
-              <Route path="/whatsapp/success" element={<IntegrationcompletePage />} />
+              {/* New prefixed integration routes */}
+              <Route
+                path="/integrations/gmail-integration"
+                element={<GmailIntegrationPage />}
+              />
+              <Route
+                path="/integrations/whatsapp-integration"
+                element={<WhatsappIntegrationLanding />}
+              />
+              <Route path="/integrations/whatsapp" element={<ConnectQR />} />
+              <Route
+                path="/integrations/whatsapp/team-members"
+                element={<SelectTeamMembersPage />}
+              />
+              <Route
+                path="/integrations/whatsapp/group"
+                element={<SelectGrouptoRead />}
+              />
+              <Route
+                path="/integrations/google-sheets-integration"
+                element={<GoogleSheetsIntegrationPage />}
+              />
+              <Route
+                path="/integrations/whatsapp/success"
+                element={<IntegrationcompletePage />}
+              />
+              <Route path="/integrations/crm" element={<CRMLoginPage />} />
+              <Route
+                path="/integrations/upload-data"
+                element={<UploadMasterDataPage />}
+              />
+              <Route
+                path="/integrations/crm-success"
+                element={<CRMSetupCompletePage />}
+              />
 
-
-              <Route path="/crm" element={<CRMLoginPage />} />
-              <Route path="/upload-data" element={<UploadMasterDataPage />} />
-              <Route path="/crm-success" element={<CRMSetupCompletePage />} />
+              {/* Redirect old routes to new prefixed routes for backward compatibility */}
+              <Route
+                path="/gmail-integration"
+                element={<Navigate to="/integrations/gmail-integration" replace />}
+              />
+              <Route
+                path="/whatsapp-integration"
+                element={<Navigate to="/integrations/whatsapp-integration" replace />}
+              />
+              <Route
+                path="/whatsapp"
+                element={<Navigate to="/integrations/whatsapp" replace />}
+              />
+              <Route
+                path="/whatsapp/team-members"
+                element={<Navigate to="/integrations/whatsapp/team-members" replace />}
+              />
+              <Route
+                path="/whatsapp/group"
+                element={<Navigate to="/integrations/whatsapp/group" replace />}
+              />
+              <Route
+                path="/google-sheets-integration"
+                element={<Navigate to="/integrations/google-sheets-integration" replace />}
+              />
+              <Route
+                path="/whatsapp/success"
+                element={<Navigate to="/integrations/whatsapp/success" replace />}
+              />
+              <Route
+                path="/crm"
+                element={<Navigate to="/integrations/crm" replace />}
+              />
+              <Route
+                path="/upload-data"
+                element={<Navigate to="/integrations/upload-data" replace />}
+              />
+              <Route
+                path="/crm-success"
+                element={<Navigate to="/integrations/crm-success" replace />}
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </DashboardLayout>

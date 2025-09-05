@@ -3,7 +3,7 @@ import UploadMasterData from "@/components/crm-integration/upload-master-data";
 
 const UploadMasterDataPage = () => {
   return (
-    <div className="flex flex-row min-h-screen min-w-screen bg-background">
+    <div className="flex flex-row min-h-screen min-w-0 bg-background">
       <LeftSectionCRM stepNo={2} currentStep={"Upload Master data"} />
       <UploadMasterData />
     </div>
