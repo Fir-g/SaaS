@@ -122,15 +122,15 @@ export class ApiService {
   }
 
   // Generic PUT request
-  async put<T>(endpoint: string, data?: any, token?: string | null): Promise<T> {
-    const apiUrl = this.getApiUrl(endpoint);
-    const url = apiUrl.startsWith('http') ? apiUrl : new URL(apiUrl, window.location.origin).toString();
-    const response = await apiFetch(url, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }, token);
-    return response.json();
-  }
+  async put<T>(endpoint: string, data?: any, token?: string | null, useBearerToken: boolean = false): Promise<T> {
+  const apiUrl = this.getApiUrl(endpoint);
+  const url = apiUrl.startsWith('http') ? apiUrl : new URL(apiUrl, window.location.origin).toString();
+  const response = await apiFetch(url, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }, token, useBearerToken);
+  return response.json();
+}
 
   // Generic DELETE request
   async delete<T>(endpoint: string, token?: string | null): Promise<T> {

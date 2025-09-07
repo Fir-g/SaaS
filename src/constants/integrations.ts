@@ -30,14 +30,14 @@ export const publishingIntegrations: Integration[] = [
     id: "google-sheets",
     icon: "/google-sheets.svg",
     name: "Google sheets",
-    description: "Connect Google Sheets to receive demands",
-    url: "/google-sheets-integration",
+    description: "Connect Google Sheets to view published demands",
+    url: "/integrations/google-sheets-integration",
   },
   {
     id: "crm-system",
     icon: "/crm.svg",
     name: "CRM system",
     description: "Connect CRM system for publishing",
-    url: "/crm",
+    url: "/integrations/crm",
   },
 ];
