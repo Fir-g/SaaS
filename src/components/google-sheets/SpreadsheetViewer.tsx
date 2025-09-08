@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RefreshCw, ExternalLink, Download, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Loader from '@/components/ui/loader';
 import { AddSpreadsheetModal } from './AddSpreadsheetModal';
 
 interface SpreadsheetViewerProps {
@@ -17,6 +18,7 @@ export const SpreadsheetViewer: React.FC<SpreadsheetViewerProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Different URL formats to try
   const embedUrls = {
@@ -28,23 +30,38 @@ export const SpreadsheetViewer: React.FC<SpreadsheetViewerProps> = ({
 
   const [currentUrl, setCurrentUrl] = useState(embedUrls.htmlEmbed);
 
+  // Reset loading state when spreadsheetId changes
+  useEffect(() => {
+    if (spreadsheetId) {
+      setIsLoading(true);
+      setError(null);
+      setIsInitialLoad(true);
+      // Update URL with new spreadsheet ID
+      setCurrentUrl(`https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit?usp=sharing&single=true&widget=true&headers=false&chrome=false`);
+    }
+  }, [spreadsheetId]);
+
   const handleIframeLoad = () => {
     setIsLoading(false);
     setError(null);
+    setIsInitialLoad(false);
   };
 
   const handleIframeError = () => {
     setIsLoading(false);
     setError("Failed to load spreadsheet. Please try refreshing or opening in a new tab.");
+    setIsInitialLoad(false);
   };
 
   const refreshSpreadsheet = () => {
     setIsLoading(true);
     setError(null);
-    // Force iframe reload by changing src
+    // Force iframe reload by adding a cache-busting parameter
     const iframe = document.getElementById('spreadsheet-iframe') as HTMLIFrameElement;
     if (iframe) {
-      iframe.src = iframe.src;
+      const url = new URL(iframe.src);
+      url.searchParams.set('t', Date.now().toString());
+      iframe.src = url.toString();
     }
   };
 
@@ -73,6 +90,7 @@ export const SpreadsheetViewer: React.FC<SpreadsheetViewerProps> = ({
     setCurrentUrl(urls.htmlEmbed);
     setIsLoading(true);
     setError(null);
+    setIsInitialLoad(true);
     
     if (onUpdateSpreadsheet) {
       onUpdateSpreadsheet();
@@ -108,6 +126,7 @@ export const SpreadsheetViewer: React.FC<SpreadsheetViewerProps> = ({
             variant="outline"
             size="sm"
             onClick={tryDifferentFormat}
+            disabled={isLoading}
             className="flex items-center gap-2"
           >
             <span className="hidden sm:inline">Try Different Format</span>
@@ -154,18 +173,29 @@ export const SpreadsheetViewer: React.FC<SpreadsheetViewerProps> = ({
 
       {/* Content */}
       <div className="flex-1 relative bg-gray-50">
-        {/* Loading overlay */}
-        {isLoading && (
-          <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+        {/* Enhanced Loading overlay for initial load */}
+        {isLoading && isInitialLoad && (
+          <div className="absolute inset-0 bg-white flex items-center justify-center z-10">
             <div className="text-center">
-              <RefreshCw className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Loading spreadsheet...</p>
+              <div className="mb-4">
+                <Loader />
+              </div>
+              <p className="text-sm text-gray-600 mb-2">Loading spreadsheet...</p>
+              <p className="text-xs text-gray-400">This may take a few moments</p>
             </div>
           </div>
         )}
 
+        {/* Smaller loading indicator for refreshes */}
+        {isLoading && !isInitialLoad && (
+          <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 flex items-center gap-2 z-10">
+            <Loader />
+            <span className="text-sm text-gray-600">Refreshing...</span>
+          </div>
+        )}
+
         {/* Error message */}
-        {error && (
+        {error && !isLoading && (
           <div className="absolute inset-0 bg-white flex items-center justify-center z-10">
             <div className="text-center max-w-md p-6">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -194,16 +224,38 @@ export const SpreadsheetViewer: React.FC<SpreadsheetViewerProps> = ({
         )}
 
         {/* Main iframe */}
-        <iframe
-          id="spreadsheet-iframe"
-          src={currentUrl}
-          title="Published Demands Spreadsheet"
-          className="w-full h-full border-0"
-          onLoad={handleIframeLoad}
-          onError={handleIframeError}
-          allow="fullscreen"
-          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-        />
+        {spreadsheetId && (
+          <iframe
+            id="spreadsheet-iframe"
+            src={currentUrl}
+            title="Published Demands Spreadsheet"
+            className="w-full h-full border-0"
+            onLoad={handleIframeLoad}
+            onError={handleIframeError}
+            allow="fullscreen"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+          />
+        )}
+
+        {/* No spreadsheet ID state */}
+        {!spreadsheetId && (
+          <div className="absolute inset-0 bg-white flex items-center justify-center z-10">
+            <div className="text-center max-w-md p-6">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Settings className="w-6 h-6 text-gray-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No spreadsheet configured</h3>
+              <p className="text-sm text-gray-600 mb-4">Please add a spreadsheet to get started.</p>
+              <Button
+                onClick={() => setShowUpdateModal(true)}
+                className="flex items-center gap-2"
+              >
+                <Settings className="w-4 h-4" />
+                Add Spreadsheet
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Update Spreadsheet Modal */}
@@ -212,7 +264,7 @@ export const SpreadsheetViewer: React.FC<SpreadsheetViewerProps> = ({
         onOpenChange={setShowUpdateModal}
         onSuccess={handleUpdateSuccess}
         token={token}
-        existingUrl={`https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`}
+        existingUrl={spreadsheetId ? `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit` : undefined}
         mode="update"
       />
     </div>

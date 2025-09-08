@@ -28,11 +28,20 @@ export interface RootCauseData {
 
 export const getRootCauseAnalysis = async (
   tenantId: string = 'FT',
+  fromDate?: string,
+  toDate?: string,
+  lspName?: string,
   token?: string | null
 ): Promise<RootCauseData[]> => {
+  const params: Record<string, string> = {};
+  
+  if (fromDate) params.from = fromDate;
+  if (toDate) params.to = toDate;
+  if (lspName) params.lsp_names = lspName;
+
   return rcaService.get<RootCauseData[]>(
     `/tenants/${tenantId}/rca`,
-    {},
+    params,
     token,
     true
   );

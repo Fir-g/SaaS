@@ -3,7 +3,9 @@ import { useAuth } from '@clerk/clerk-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw, TrendingDown, Target, BarChart3 } from 'lucide-react';
 import SunburstChart from './SunburstChart';
+import RCAFilter from './rca-filter';
 import { getRootCauseAnalysis, RootCauseData } from '@/services/rootCauseService';
+import { getLspNames, LspNamesResponse } from '@/services/demandAggregatorService';
 
 interface RootCauseAnalysisProps {
   entityType?: string;
@@ -34,6 +36,24 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
   const [rcaData, setRcaData] = useState<RootCauseData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [availableLspNames, setAvailableLspNames] = useState<string[]>([]);
+  
+  // Filter states
+  const [fromDate, setFromDate] = useState<string>('');
+  const [toDate, setToDate] = useState<string>('');
+  const [selectedLspNames, setSelectedLspNames] = useState<string[]>([]);
+
+  // Fetch available LSP names
+  const fetchLspNames = useCallback(async () => {
+    try {
+      const token = await getClerkBearer();
+      const response = await getLspNames(entityType, token);
+      setAvailableLspNames(response.lsp_names || []);
+    } catch (err) {
+      console.error('Error fetching LSP names:', err);
+      setAvailableLspNames([]);
+    }
+  }, [entityType, getClerkBearer]);
 
   const fetchRCAData = useCallback(async () => {
     setLoading(true);
@@ -41,7 +61,17 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
     
     try {
       const token = await getClerkBearer();
-      const response = await getRootCauseAnalysis(entityType, token);
+      
+      // Convert selected LSP names to comma-separated string
+      const lspNamesParam = selectedLspNames.length > 0 ? selectedLspNames.join(',') : undefined;
+      
+      const response = await getRootCauseAnalysis(
+        entityType, 
+        fromDate || undefined, 
+        toDate || undefined, 
+        lspNamesParam, 
+        token
+      );
       setRcaData(response);
     } catch (err) {
       console.error('Error fetching RCA data:', err);
@@ -50,11 +80,32 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [entityType, getClerkBearer]);
+  }, [entityType, fromDate, toDate, selectedLspNames, getClerkBearer]);
 
+  // Initial load of LSP names
   useEffect(() => {
-    fetchRCAData();
+    fetchLspNames();
+  }, [fetchLspNames]);
+
+  // Fetch RCA data when filters change
+  useEffect(() => {
+    if (fromDate && toDate) {
+      fetchRCAData();
+    }
   }, [fetchRCAData]);
+
+  const handleDateRangeChange = useCallback((from: string, to: string) => {
+    setFromDate(from);
+    setToDate(to);
+  }, []);
+
+  const handleLspNamesChange = useCallback((lspNames: string[]) => {
+    setSelectedLspNames(lspNames);
+  }, []);
+
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([fetchLspNames(), fetchRCAData()]);
+  }, [fetchLspNames, fetchRCAData]);
 
   // Memoize calculations for better performance
   const summaryStats = useMemo(() => {
@@ -90,7 +141,7 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
         {error}
       </p>
       <button
-        onClick={fetchRCAData}
+        onClick={handleRefresh}
         className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
       >
         Try Again
@@ -108,7 +159,7 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
         No Issues Found
       </h3>
       <p className="text-xs sm:text-sm text-green-600 text-center max-w-md leading-relaxed">
-        Great! No failure patterns detected at this time.
+        Great! No failure patterns detected for the selected filters.
       </p>
     </div>
   );
@@ -221,7 +272,6 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
   );
 
   const hasData = rcaData.length > 0;
-  const hasFailures = summaryStats.totalFailures > 0;
 
   return (
     <div className={`w-full space-y-3 sm:space-y-4 ${className}`}>
@@ -239,7 +289,7 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-shrink-0">
             <button
-              onClick={fetchRCAData}
+              onClick={handleRefresh}
               disabled={loading}
               className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto justify-center"
             >
@@ -250,8 +300,14 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
         </div>
       </div>
 
-      {/* Main Content Card with optional full-width breakout */}
-      <div>
+      {/* Filter Component */}
+      <RCAFilter
+        onDateRangeChange={handleDateRangeChange}
+        onLspNamesChange={handleLspNamesChange}
+        availableLspNames={availableLspNames}
+      />
+
+      {/* Main Content Card */}
       <Card className="shadow-sm">
         <CardHeader className="py-2">
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -274,14 +330,6 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
 
               {/* Chart Section */}
               <div className="bg-white border rounded-lg sm:p-4">
-                {/* <div className="flex items-center gap-2 mb-4">
-                  <BarChart3 className="h-5 w-5 text-gray-600" />
-                  <h4 className="text-base sm:text-lg font-semibold">
-                    Failure Pattern Visualization
-                  </h4>
-                </div> */}
-                
-                {/* Chart Container with proper responsive sizing */}
                 <div className="w-full h-full overflow-hidden">
                   <div className={`w-full ${chartHeight} min-h-[620px]`}>
                     <SunburstChart data={rcaData} />
@@ -295,7 +343,6 @@ const RootCauseAnalysis: React.FC<RootCauseAnalysisProps> = ({
           )}
         </CardContent>
       </Card>
-      </div>
     </div>
   );
 };

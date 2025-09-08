@@ -142,11 +142,11 @@ const SunburstChart: React.FC<SunburstChartProps> = ({ data }) => {
 			borderColor: 'rgba(255,255,255,0.1)',
 			style: { color: '#fff' },
 			pointFormatter: function () {
-				const p = this as any;
-				const name = String(this.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				const point = this as any;
+				const name = String(point.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 				return `<div style="min-width:160px;padding:6px 8px;">
 					<div style="font-weight:700;margin-bottom:4px;">${name}</div>
-					<div style="opacity:.9">Value: <span style="color:#F59E0B;font-weight:700;">${(p.value ?? 0).toFixed(2)}%</span></div>
+					<div style="opacity:.9">Value: <span style="color:#F59E0B;font-weight:700;">${(point.value ?? 0).toFixed(2)}%</span></div>
 				</div>`;
 			}
 		},

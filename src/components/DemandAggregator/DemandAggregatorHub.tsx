@@ -207,7 +207,7 @@ const DemandAggregatorHub: React.FC = () => {
   const handleBucketChange = (bucket: string) => setSelectedBucket(bucket);
   const handleStatusChange = (_statuses: string[], statusParam: string) =>
     setSelectedStatusParam(statusParam);
-  const handleViewAllClick = () => navigate("/demand-aggregator/spreadsheet");
+  const handleViewAllClick = () => navigate("/integrations/google-sheets-integration");
 
   const getCurrentChannelData = () =>
     channelSplitData?.rows ? channelSplitData.rows : [];

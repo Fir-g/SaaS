@@ -205,6 +205,13 @@ const ODVLSPFilter: React.FC<ODVLSPFilterProps> = ({ onFiltersChange }) => {
                     size="sm"
                     className="h-auto p-0 ml-1"
                     onClick={() => removeFilter('origins', origin)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        removeFilter('origins', origin);
+                      }
+                    }}
+                    aria-label={`Remove ${origin} filter`}
                   >
                     <X className="w-3 h-3" />
                   </Button>
