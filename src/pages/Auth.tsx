@@ -27,7 +27,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="absolute inset-0 bg-gradient-hero opacity-5"></div>
+      <div className="absolute inset-0 bg-gradient-hero opacity-10"></div>
       <div className="w-full max-w-md relative z-10">
         <AuthForm
           onLogin={handleLogin}

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Clock, Loader2 } from "lucide-react";
+import { Clock, Loader as Loader2 } from "lucide-react";
 
 interface ChatSessionCardProps {
   session: any;
@@ -29,7 +29,7 @@ export function ChatSessionCard({
       className={cn(
         "w-full justify-start p-3 h-auto text-left transition-all duration-200",
         isActive
-          ? "bg-gradient-primary text-white shadow-sm hover:opacity-90"
+          ? "bg-brand-primary text-white shadow-sm hover:bg-brand-accent"
           : "hover:bg-secondary/60",
         isLoading && "opacity-60"
       )}

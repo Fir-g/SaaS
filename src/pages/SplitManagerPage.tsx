@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Check, AlertCircle, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, CircleAlert as AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { TabBasedSplitManager } from '@/components/split-manager/TabBasedSplitManager';

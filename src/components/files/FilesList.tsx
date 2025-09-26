@@ -1,4 +1,4 @@
-import { FileText, Loader2 } from "lucide-react";
+import { FileText, Loader as Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileCard } from "./FileCard";
 import type { FileData } from "@/types";

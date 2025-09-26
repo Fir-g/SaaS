@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, FileSpreadsheet, ChevronRight, Layers, Loader2 } from "lucide-react";
+import { Search, FileSpreadsheet, ChevronRight, Layers, Loader as Loader2 } from "lucide-react";
 import { extractedDataService } from '@/services';
 
 interface FileExplorerProps {
@@ -71,7 +71,7 @@ export const FileExplorer = ({
                   <div key={file.id} className="space-y-1">
                     <div className={`w-full px-3 py-2.5 rounded-lg flex items-center gap-3 transition-all ${
                       isSelected 
-                        ? 'bg-gray-900 text-white shadow-md' 
+                        ? 'bg-brand-primary text-white shadow-md' 
                         : 'bg-white hover:bg-gray-100 text-gray-700 border border-gray-200'
                     }`}>
                       <button
@@ -118,7 +118,7 @@ export const FileExplorer = ({
                               onClick={() => onSheetSelect(sheetName)}
                               className={`w-full px-3 py-2 rounded-md flex items-center gap-2 text-sm transition-all ${
                                 selectedSheet === sheetName 
-                                  ? 'bg-gray-200 text-gray-900 font-medium' 
+                                  ? 'bg-brand-light text-brand-primary font-medium' 
                                   : 'hover:bg-gray-100 text-gray-600'
                               }`}
                             >

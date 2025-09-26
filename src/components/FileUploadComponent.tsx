@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, DragEvent } from "react";
-import { Loader2, AlertCircle, Upload, ChevronDown } from "lucide-react";
+import { Loader as Loader2, CircleAlert as AlertCircle, Upload, ChevronDown } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { fileService } from '@/services';
 import * as XLSX from 'xlsx';
@@ -599,7 +599,7 @@ export default function EnhancedFileUpload({
                 disabled={!areAllFilesValid() || uploading}
                 className={`w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all transform shadow-lg text-sm sm:text-base ${
                   areAllFilesValid() && !uploading
-                    ? 'bg-brand-primary hover:bg-brand-accent text-white hover:scale-105'
+                    ? 'bg-black hover:bg-gray-800 text-white hover:scale-105'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >

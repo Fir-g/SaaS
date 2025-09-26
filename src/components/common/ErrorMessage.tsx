@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react';
+import { CircleAlert as AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ErrorMessageProps {
@@ -8,9 +8,9 @@ interface ErrorMessageProps {
 
 export const ErrorMessage = ({ message, className }: ErrorMessageProps) => {
   return (
-    <Alert className={`border-red-200 bg-red-50 ${className}`}>
-      <AlertCircle className="h-4 w-4 text-red-600" />
-      <AlertDescription className="text-red-800">
+    <Alert className={`border-destructive/30 bg-destructive/10 ${className}`}>
+      <AlertCircle className="h-4 w-4 text-destructive" />
+      <AlertDescription className="text-destructive">
         {message}
       </AlertDescription>
     </Alert>

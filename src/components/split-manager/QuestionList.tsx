@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, FileSpreadsheet } from 'lucide-react';
+import { CircleCheck as CheckCircle, Circle as XCircle, FileSpreadsheet } from 'lucide-react';
 import type { Question } from '@/services/splitService';
 
 interface QuestionListProps {

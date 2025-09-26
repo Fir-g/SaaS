@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Zap } from 'lucide-react';
+import { CircleCheck as CheckCircle, Circle as XCircle, Zap } from 'lucide-react';
 
 interface BulkActionsProps {
   onSplitAll: () => void;
