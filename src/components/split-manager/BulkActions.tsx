@@ -36,7 +36,7 @@ export const BulkActions = ({
         variant="default"
         size={size}
         disabled={disabled}
-        className="flex-1 bg-green-600 hover:bg-green-700 border-green-600"
+        className="flex-1 bg-success hover:bg-success/90 border-success"
       >
         <CheckCircle className={`${size === 'sm' ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
         {splitAllText}

@@ -21,7 +21,7 @@ export const ChatWelcome = ({ activeSessionId, sessionsLength, onNewChat }: Chat
           Ask questions about your data, request analysis, or get insights to get started.
         </p>
         {!activeSessionId && sessionsLength === 0 && (
-          <Button onClick={onNewChat} className="bg-gradient-primary">
+          <Button onClick={onNewChat} className="bg-brand-primary hover:bg-brand-accent">
             <MessageSquare className="h-4 w-4 mr-2" />
             Create First Chat
           </Button>

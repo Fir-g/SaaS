@@ -47,7 +47,7 @@ export const ChatInput = ({ onSendMessage, isTyping, loading }: ChatInputProps) 
             <Button
               onClick={handleSendMessage}
               disabled={!newMessage.trim() || isTyping || loading}
-              className="bg-gradient-primary hover:opacity-90 shadow-md"
+              className="bg-brand-primary hover:bg-brand-accent shadow-md"
             >
               {isTyping ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

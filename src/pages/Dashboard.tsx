@@ -76,7 +76,7 @@ const Dashboard = () => {
       <main className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold font-[Calibri] text-[#3b1344]">
+            <h2 className="text-2xl font-bold text-brand-primary">
               Your Projects ({projects.length})
             </h2>
           </div>
@@ -86,12 +86,15 @@ const Dashboard = () => {
               variant="outline"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="h-10 px-4 shadow-md hover:shadow-lg transition flex items-center space-x-1 border-[#3b1344] text-[#3b1344] hover:bg-[#3b1344] hover:text-white"
+              className="h-10 px-4 shadow-md hover:shadow-lg transition flex items-center space-x-1 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white"
             >
               <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
             </Button>
 
-            <CreateProjectDialog onCreateProject={async (name, description) => { await createProject(name, description); }} isLoading={isLoading} />
+            <CreateProjectDialog 
+              onCreateProject={async (name, description) => { await createProject(name, description); }} 
+              isLoading={isLoading} 
+            />
           </div>
         </div>
 

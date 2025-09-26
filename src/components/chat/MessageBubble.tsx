@@ -26,7 +26,7 @@ export const MessageBubble = ({ message, formatTime }: MessageBubbleProps) => {
           <AvatarFallback
             className={
               message.role === 'user'
-                ? 'bg-gradient-primary text-white'
+                ? 'bg-brand-primary text-white'
                 : 'bg-secondary'
             }
           >
@@ -42,7 +42,7 @@ export const MessageBubble = ({ message, formatTime }: MessageBubbleProps) => {
           <div
             className={`rounded-lg px-4 py-2 ${
               message.role === 'user'
-                ? 'bg-gradient-primary text-white'
+                ? 'bg-brand-primary text-white'
                 : 'bg-secondary text-foreground'
             }`}
           >

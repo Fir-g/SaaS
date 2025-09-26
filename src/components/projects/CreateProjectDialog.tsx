@@ -62,7 +62,7 @@ export const CreateProjectDialog = ({ onCreateProject, isLoading }: CreateProjec
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="shadow-md bg-[#3b1344] hover:bg-[#3b1344]/90 text-white font-[Calibri]">
-          <Plus className="h-4 w-4 mr-2 text-white" />
+          <Plus className="h-4 w-4 mr-2" />
           New Project
         </Button>
       </DialogTrigger>
@@ -98,7 +98,7 @@ export const CreateProjectDialog = ({ onCreateProject, isLoading }: CreateProjec
           </div>
           <Button
             type="submit"
-            className="w-full bg-[#3b1344] hover:bg-[#3b1344]/90 text-white font-[Calibri]"
+            className="w-full bg-brand-primary hover:bg-brand-accent text-white"
             disabled={isLoading}
           >
             {isLoading ? (

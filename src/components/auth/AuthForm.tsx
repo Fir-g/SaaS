@@ -75,7 +75,7 @@ export const AuthForm = ({ onLogin, onSignup, isLoading, error }: AuthFormProps)
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-primary hover:opacity-90 shadow-md"
+                className="w-full bg-brand-primary hover:bg-brand-accent shadow-md"
                 disabled={isLoading}
               >
                 {isLoading ? <LoadingSpinner size="sm" text="Signing in..." /> : 'Sign In'}
@@ -127,7 +127,7 @@ export const AuthForm = ({ onLogin, onSignup, isLoading, error }: AuthFormProps)
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-primary hover:opacity-90 shadow-md"
+                className="w-full bg-brand-primary hover:bg-brand-accent shadow-md"
                 disabled={isLoading}
               >
                 {isLoading ? <LoadingSpinner size="sm" text="Creating account..." /> : 'Create Account'}

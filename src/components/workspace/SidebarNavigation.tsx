@@ -54,7 +54,7 @@ export function SidebarNavigation({ activeView, onViewChange, isCollapsed = fals
                 "w-full transition-all duration-200",
                 isCollapsed ? "h-12 px-3 justify-center" : "h-auto p-3 justify-start",
                 isActive
-                  ? "bg-[#3b1344] text-white shadow-md hover:bg-[#3b1344]/90"
+                  ? "bg-brand-primary text-white shadow-md hover:bg-brand-accent"
                   : "hover:bg-gray-100 text-gray-700"
               )}
               title={isCollapsed ? item.label : undefined}

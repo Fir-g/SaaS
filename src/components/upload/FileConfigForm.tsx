@@ -74,7 +74,7 @@ export const FileConfigForm = ({
             onClick={onToggleDropdown}
             disabled={uploading}
             className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-black transition-all flex items-center justify-between ${
-              showValidation && !selectedType ? 'border-red-300 bg-red-50 focus:border-red-400' : 'border-gray-300 focus:border-black hover:border-gray-400'
+              showValidation && !selectedType ? 'border-destructive bg-red-50 focus:border-destructive' : 'border-gray-300 focus:border-brand-primary hover:border-gray-400'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             <span className={`truncate ${selectedType ? 'text-gray-900' : 'text-gray-500'}`}>
@@ -114,6 +114,7 @@ export const FileConfigForm = ({
             onChange={(e) => onUpdateDescription(e.target.value)}
             placeholder="Enter a brief description..."
             className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition-all"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-all"
             disabled={uploading}
           />
         </div>

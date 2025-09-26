@@ -20,7 +20,7 @@ export const FilesHeader = ({ onUploadClick, onSplitManagerClick }: FilesHeaderP
         <Button 
           onClick={onSplitManagerClick}
           variant="outline"
-          className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+          className="border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white"
         >
           <Split className="h-4 w-4 mr-2" />
           Import Wizard
@@ -28,7 +28,7 @@ export const FilesHeader = ({ onUploadClick, onSplitManagerClick }: FilesHeaderP
 
         <Button 
           onClick={onUploadClick}
-          className="bg-black hover:bg-black text-white"
+          className="bg-brand-primary hover:bg-brand-accent text-white"
         >
           <Upload className="h-4 w-4 mr-2" />
           Upload Files

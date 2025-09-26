@@ -28,7 +28,7 @@ export const EmptyState = ({
         {description}
       </p>
       {actionLabel && onAction && (
-        <Button onClick={onAction} className="bg-gradient-primary hover:opacity-90">
+        <Button onClick={onAction} className="bg-brand-primary hover:bg-brand-accent">
           {actionLabel}
         </Button>
       )}

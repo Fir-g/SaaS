@@ -54,9 +54,9 @@ const confidenceRanges: ConfidenceRange[] = [
     label: 'High Confidence',
     min: 0.85,
     max: 1,
-    color: 'text-green-700',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200',
+    color: 'text-success',
+    bgColor: 'bg-success/10',
+    borderColor: 'border-success/30',
     description: '85-100% confidence',
     bulkActions: 'split'
   }
@@ -158,6 +158,7 @@ export const ByConfidenceView = ({
                         </Badge>
                         {stats.answered > 0 && (
                           <Badge variant="secondary" className="text-xs">
+                          <Badge variant="default" className="text-xs bg-success/10 text-success border-success/30">
                             {stats.answered} answered
                           </Badge>
                         )}
@@ -201,7 +202,7 @@ export const ByConfidenceView = ({
                         onClick={() => handleRangeBulkAction(range, 1)}
                         size="sm"
                         variant="default"
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-success hover:bg-success/90"
                       >
                         <Target className="h-3 w-3 mr-1" />
                         Mark All as Split

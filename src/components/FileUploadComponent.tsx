@@ -599,7 +599,7 @@ export default function EnhancedFileUpload({
                 disabled={!areAllFilesValid() || uploading}
                 className={`w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all transform shadow-lg text-sm sm:text-base ${
                   areAllFilesValid() && !uploading
-                    ? 'bg-black hover:bg-gray-800 text-white hover:scale-105'
+                    ? 'bg-brand-primary hover:bg-brand-accent text-white hover:scale-105'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >

@@ -102,7 +102,7 @@ export const BySheetView = ({
                       </Badge>
                     )}
                     {stats.splitDecisions > 0 && (
-                      <Badge variant="default" className="text-xs bg-green-100 text-green-700 border-green-200">
+                      <Badge variant="default" className="text-xs bg-success/10 text-success border-success/30">
                         {stats.splitDecisions} split
                       </Badge>
                     )}

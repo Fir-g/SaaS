@@ -39,7 +39,7 @@ export const SubmitConfirmationDialog = ({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
+            <AlertTriangle className="h-5 w-5 text-warning" />
             Auto-Complete Missing Decisions
           </DialogTitle>
           <DialogDescription>
@@ -56,11 +56,11 @@ export const SubmitConfirmationDialog = ({
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Answered by You:</span>
-              <span className="font-medium text-blue-600">{answeredByUser}</span>
+              <span className="font-medium text-brand-primary">{answeredByUser}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Auto-Completed:</span>
-              <span className="font-medium text-orange-600">{totalAutoDecisions}</span>
+              <span className="font-medium text-warning">{totalAutoDecisions}</span>
             </div>
           </div>
 
@@ -98,7 +98,7 @@ export const SubmitConfirmationDialog = ({
                   {autoNoSplit.length > 3 && (
                     <button
                       onClick={() => setExpandedNoSplit(!expandedNoSplit)}
-                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                      className="flex items-center gap-1 text-xs text-brand-primary hover:text-brand-accent transition-colors"
                     >
                       {expandedNoSplit ? (
                         <>
@@ -118,11 +118,11 @@ export const SubmitConfirmationDialog = ({
             )}
 
             {autoSplit.length > 0 && (
-              <div className="border border-green-200 rounded-lg p-3 bg-green-50/30">
+              <div className="border border-success/30 rounded-lg p-3 bg-success/10">
                 <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <CheckCircle className="h-4 w-4 text-success" />
                   <span className="text-sm font-medium">Split</span>
-                  <Badge variant="default" className="text-xs bg-green-100 text-green-700">
+                  <Badge variant="default" className="text-xs bg-success/10 text-success">
                     {autoSplit.length} questions
                   </Badge>
                 </div>
@@ -147,7 +147,7 @@ export const SubmitConfirmationDialog = ({
                   {autoSplit.length > 3 && (
                     <button
                       onClick={() => setExpandedSplit(!expandedSplit)}
-                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                      className="flex items-center gap-1 text-xs text-brand-primary hover:text-brand-accent transition-colors"
                     >
                       {expandedSplit ? (
                         <>

@@ -76,7 +76,7 @@ export const FilesList = ({ files, loading, onRequestDelete }: FilesListProps) =
     return (
       <Card className="border-0 bg-white/60 backdrop-blur shadow-sm flex-1 flex flex-col overflow-hidden">
         <CardContent className="p-6 flex-1 flex flex-col items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#3b1344] mb-3" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-primary mb-3" />
           <div className="text-gray-600">Loading files...</div>
         </CardContent>
       </Card>

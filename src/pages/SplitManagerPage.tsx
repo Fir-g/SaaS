@@ -560,7 +560,7 @@ const SplitManagerPage = () => {
         ) : !splitData && shouldContinuePolling(fileStatus) ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3b1344] mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {getStatusDisplay(fileStatus)}
               </h3>
@@ -574,14 +574,14 @@ const SplitManagerPage = () => {
             <div className="text-center">
               <div className={`rounded-full h-12 w-12 mx-auto mb-4 flex items-center justify-center ${
                 fileStatus === 'failed' ? 'bg-red-100' : 
-                fileStatus === 'completed' ? 'bg-green-100' : 'bg-yellow-100'
+               fileStatus === 'completed' ? 'bg-success/10' : 'bg-warning/10'
               }`}>
                 {fileStatus === 'failed' ? (
-                  <AlertCircle className="h-6 w-6 text-red-600" />
+                 <AlertCircle className="h-6 w-6 text-destructive" />
                 ) : fileStatus === 'completed' ? (
-                  <Check className="h-6 w-6 text-green-600" />
+                 <Check className="h-6 w-6 text-success" />
                 ) : (
-                  <AlertCircle className="h-6 w-6 text-yellow-600" />
+                 <AlertCircle className="h-6 w-6 text-warning" />
                 )}
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">

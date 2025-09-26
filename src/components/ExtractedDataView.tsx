@@ -466,7 +466,7 @@ export function ExtractedDataView() {
             <div className="p-2">
               <button
                 onClick={() => window.open(citation.toString(), '_blank', 'noopener,noreferrer')}
-                className="inline-flex items-center px-2 py-1 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors duration-200"
+                className="inline-flex items-center px-2 py-1 rounded-md bg-brand-primary text-white text-xs font-medium hover:bg-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-1 transition-colors duration-200"
                 title="Open citation link"
               >
                 <ExternalLink className="h-3 w-3 mr-1" />
@@ -764,7 +764,7 @@ export function ExtractedDataView() {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                   <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Data</h3>
+                <h3 className="text-lg font-semibold text-brand-primary mb-2">Loading Data</h3>
                 <p className="text-gray-600 max-w-md">
                   Please wait while we fetch the extracted data from your processed documents...
                 </p>
@@ -807,7 +807,7 @@ export function ExtractedDataView() {
                 </p>
                 <Button
                   onClick={handleRefresh}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-brand-primary hover:bg-brand-accent text-white"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Try Again
@@ -847,7 +847,7 @@ export function ExtractedDataView() {
                 <Button
                   onClick={() => exportData(filteredData)}
                   size="sm"
-                  className="h-9 bg-blue-600 hover:bg-blue-700"
+                  className="h-9 bg-brand-primary hover:bg-brand-accent"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Export Specifications
@@ -1016,7 +1016,7 @@ export function ExtractedDataView() {
                       <Button
                         variant="ghost"
                         className="h-11"
-                        onClick={resetExcelForm}
+                        className="bg-gradient-to-r from-brand-primary to-brand-accent hover:from-brand-accent hover:to-brand-primary text-white px-6 py-3 h-11 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                         title="Clear selections"
                       >
                         Reset
@@ -1093,7 +1093,7 @@ export function ExtractedDataView() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => exportData(excelData)}
+                          className="h-7 px-2 text-xs bg-brand-primary hover:bg-brand-accent"
                           className="h-8"
                         >
                           <Download className="h-4 w-4 mr-1" />
