@@ -466,7 +466,7 @@ export function ExtractedDataView() {
             <div className="p-2">
               <button
                 onClick={() => window.open(citation.toString(), '_blank', 'noopener,noreferrer')}
-                className="inline-flex items-center px-2 py-1 rounded-md bg-brand-primary text-white text-xs font-medium hover:bg-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-1 transition-colors duration-200"
+                className="inline-flex items-center px-2 py-1 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors duration-200"
                 title="Open citation link"
               >
                 <ExternalLink className="h-3 w-3 mr-1" />
@@ -1015,7 +1015,7 @@ export function ExtractedDataView() {
                     {(selectedFund || selectedCompany || excelData.length > 0) && (
                       <Button
                         variant="ghost"
-                        className="h-11"
+                        onClick={resetExcelForm}
                         className="bg-gradient-to-r from-brand-primary to-brand-accent hover:from-brand-accent hover:to-brand-primary text-white px-6 py-3 h-11 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                         title="Clear selections"
                       >
@@ -1050,9 +1050,9 @@ export function ExtractedDataView() {
               <Card className="border-0 bg-white/60 backdrop-blur shadow-sm flex-grow flex items-center justify-center">
                 <CardContent className="p-8 text-center">
                   <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                      <FileSpreadsheet className="h-8 w-8 text-blue-600" />
-                    </div>
+                  <div className="w-16 h-16 bg-brand-light rounded-full flex items-center justify-center mb-4">
+                    <FileSpreadsheet className="h-5 w-5 text-brand-primary" />
+                  </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No Excel Data Available</h3>
                     <p className="text-gray-600 mb-4 max-w-md">
                       Select a fund and company above, then click "Extract Data" to fetch Excel data.
@@ -1074,8 +1074,8 @@ export function ExtractedDataView() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                          <FileSpreadsheet className="h-5 w-5 text-green-600" />
+                        <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
+                          <FileSpreadsheet className="h-5 w-5 text-success" />
                         </div>
                         <div>
                           <h4 className="font-semibold text-gray-900 text-lg">
@@ -1093,7 +1093,7 @@ export function ExtractedDataView() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-7 px-2 text-xs bg-brand-primary hover:bg-brand-accent"
+                          onClick={() => exportData(excelData)}
                           className="h-8"
                         >
                           <Download className="h-4 w-4 mr-1" />
